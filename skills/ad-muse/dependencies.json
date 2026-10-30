@@ -21,7 +21,7 @@
       "source": {
         "type": "github",
         "github": "peipeijiang/product-ugc-pipeline",
-        "ref": "main",
+        "ref": "v2-five-categories",
         "path": ""
       }
     },
