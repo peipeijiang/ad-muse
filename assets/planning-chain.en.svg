@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" viewBox="0 0 1280 560" role="img" aria-label="AdMuse planning chain: shot rows, storyboard, white-mesh previs, action chain">
+  <rect width="1280" height="560" rx="20" fill="#faf8ff"/>
+  <text x="40" y="48" font-size="24" font-weight="700" fill="#2d2440" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">Plan first, generate second: every step leaves a checkable file</text>
+  <text x="40" y="76" font-size="15" fill="#7a6f91" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">All four planning artifacts come from one shot table; the final prompt is written only after they agree</text>
+
+  <!-- card 1: shot rows -->
+  <g transform="translate(24 100)">
+    <rect width="284" height="344" rx="16" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+    <path d="M16 0H268A16 16 0 0 1 284 16V48H0V16A16 16 0 0 1 16 0Z" fill="#7c3aed"/>
+    <text x="18" y="31" font-size="17" font-weight="700" fill="#fff" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">① Shot planning</text>
+    <text x="266" y="31" text-anchor="end" font-size="12" fill="#ede9fe" font-family="Menlo,Consolas,monospace">shot_rows.json</text>
+    <g font-family="Menlo,Consolas,monospace" font-size="12" fill="#2d2440">
+      <rect x="16" y="64" width="252" height="26" rx="5" fill="#ede9fe"/>
+      <text x="24" y="81" font-weight="700">t      shot · cam · contact · state</text>
+      <text x="24" y="111">0–3s   POV grab   handheld push</text>
+      <text x="24" y="137">3–5s   match cut  bag → home</text>
+      <text x="24" y="163">5–8s   mount CU   right hand</text>
+      <text x="24" y="189">8–12s  button CU  off → on</text>
+      <text x="24" y="215">12–15s night wide lit road</text>
+      <line x1="16" y1="96" x2="268" y2="96" stroke="#e4def5"/><line x1="16" y1="122" x2="268" y2="122" stroke="#e4def5"/><line x1="16" y1="148" x2="268" y2="148" stroke="#e4def5"/><line x1="16" y1="174" x2="268" y2="174" stroke="#e4def5"/><line x1="16" y1="200" x2="268" y2="200" stroke="#e4def5"/><line x1="16" y1="226" x2="268" y2="226" stroke="#e4def5"/>
+    </g>
+    <text x="18" y="262" font-size="14" fill="#4b4060" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">Axis, blocking, camera, contact,</text>
+    <text x="18" y="286" font-size="14" fill="#4b4060" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">before/after state; contiguous time</text>
+    <text x="18" y="318" font-size="13" fill="#7c3aed" font-weight="700" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">Single source of truth</text>
+  </g>
+
+  <!-- card 2: storyboard -->
+  <g transform="translate(332 100)">
+    <rect width="284" height="344" rx="16" fill="#fff" stroke="#d6487a" stroke-width="2"/>
+    <path d="M16 0H268A16 16 0 0 1 284 16V48H0V16A16 16 0 0 1 16 0Z" fill="#d6487a"/>
+    <text x="18" y="31" font-size="17" font-weight="700" fill="#fff" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">② Storyboard</text>
+    <text x="266" y="31" text-anchor="end" font-size="12" fill="#fde7f0" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">if needed</text>
+    <g stroke="#2d2440" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <g transform="translate(16 64)"><rect width="76" height="96" rx="6" fill="#f6f6f8"/><rect x="12" y="52" width="16" height="12"/><rect x="30" y="52" width="16" height="12"/><rect x="48" y="52" width="16" height="12"/><rect x="21" y="40" width="16" height="12"/><rect x="39" y="40" width="16" height="12"/><path d="M48 18 L44 38"/><circle cx="49" cy="15" r="4"/></g>
+      <g transform="translate(104 64)"><rect width="76" height="96" rx="6" fill="#f6f6f8"/><path d="M14 30H62"/><path d="M50 30 L56 16"/><rect x="24" y="44" width="28" height="18" rx="4"/><path d="M38 44V36"/></g>
+      <g transform="translate(192 64)"><rect width="76" height="96" rx="6" fill="#f6f6f8"/><rect x="14" y="34" width="38" height="24" rx="5"/><circle cx="58" cy="30" r="5"/><path d="M58 22 L58 14"/></g>
+      <g transform="translate(16 176)"><rect width="76" height="96" rx="6" fill="#f6f6f8"/><rect x="12" y="30" width="22" height="16" rx="4"/><path d="M34 34 L68 24 M34 42 L68 56" stroke="#e8a72c"/><path d="M8 78 H70"/></g>
+      <g transform="translate(104 176)"><rect width="76" height="96" rx="6" fill="#f6f6f8"/><circle cx="22" cy="66" r="12"/><circle cx="56" cy="66" r="12"/><path d="M22 66 L36 46 L56 66 M36 46 H52 L58 40"/><rect x="54" y="34" width="12" height="8" rx="2"/></g>
+      <g transform="translate(192 176)"><rect width="76" height="96" rx="6" fill="#f6f6f8"/><rect x="18" y="26" width="40" height="26" rx="6"/><path d="M26 66 L38 76 L54 58"/></g>
+    </g>
+    <g font-size="11" fill="#7a6f91" font-family="Menlo,Consolas,monospace"><text x="20" y="80">01</text><text x="108" y="80">02</text><text x="196" y="80">03</text><text x="20" y="192">04</text><text x="108" y="192">05</text><text x="196" y="192">06</text></g>
+    <text x="18" y="300" font-size="14" fill="#4b4060" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">Black-and-white panels in order:</text>
+    <text x="18" y="324" font-size="14" fill="#4b4060" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">shot size, viewpoint, product state</text>
+  </g>
+
+  <!-- card 3: previs -->
+  <g transform="translate(640 100)">
+    <rect width="284" height="344" rx="16" fill="#fff" stroke="#0284c7" stroke-width="2"/>
+    <path d="M16 0H268A16 16 0 0 1 284 16V48H0V16A16 16 0 0 1 16 0Z" fill="#0284c7"/>
+    <text x="18" y="31" font-size="17" font-weight="700" fill="#fff" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">③ White-mesh previs</text>
+    <text x="266" y="31" text-anchor="end" font-size="12" fill="#e0f2fe" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">if needed</text>
+    <g transform="translate(16 64)">
+      <rect width="252" height="208" rx="8" fill="#eef2f6"/>
+      <g stroke="#c5ced8" stroke-width="1"><path d="M20 196 L96 112 M70 196 L116 112 M126 196 L136 112 M182 196 L156 112 M232 196 L176 112 M30 184 H222 M46 162 H206 M62 142 H190 M78 124 H174"/></g>
+      <path d="M150 70 L196 70 L196 100 L150 100 Z" fill="#d7dde4" stroke="#5b6675" stroke-width="2"/>
+      <path d="M196 74 L244 52 M196 96 L244 120" stroke="#e8a72c" stroke-width="2" stroke-dasharray="5 4"/>
+      <ellipse cx="226" cy="168" rx="22" ry="8" fill="#fde9b8" stroke="#e8a72c" stroke-width="1.5"/>
+      <path d="M210 104 Q226 136 226 160" stroke="#e8a72c" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+      <rect x="22" y="40" width="34" height="22" rx="4" fill="#5b6675"/><path d="M56 46 L70 40 V62 L56 56 Z" fill="#5b6675"/>
+      <path d="M70 46 L148 76 M70 58 L148 98" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <path d="M100 176 Q128 140 152 104" stroke="#d6487a" stroke-width="2.5" fill="none" stroke-dasharray="6 4"/>
+      <circle cx="100" cy="176" r="5" fill="#d6487a"/>
+      <text x="22" y="30" font-size="11" fill="#0284c7" font-family="Menlo,Consolas,monospace">cam A</text>
+      <text x="64" y="194" font-size="11" fill="#d6487a" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">hand path</text>
+      <text x="160" y="62" font-size="11" fill="#5b6675" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">orientation</text>
+    </g>
+    <text x="18" y="300" font-size="14" fill="#4b4060" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">Gray mesh blocks out floor anchors,</text>
+    <text x="18" y="324" font-size="14" fill="#4b4060" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">cameras, axis, hand path, light path</text>
+  </g>
+
+  <!-- card 4: action chain -->
+  <g transform="translate(948 100)">
+    <rect width="308" height="344" rx="16" fill="#fff" stroke="#d97706" stroke-width="2"/>
+    <path d="M16 0H292A16 16 0 0 1 308 16V48H0V16A16 16 0 0 1 16 0Z" fill="#d97706"/>
+    <text x="18" y="31" font-size="17" font-weight="700" fill="#fff" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">④ Action chain</text>
+    <text x="292" y="31" text-anchor="end" font-size="10.5" fill="#fef3c7" font-family="Menlo,Consolas,monospace">action_prompt_draft.md</text>
+    <g font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif" font-size="14" fill="#2d2440">
+      <rect x="20" y="66" width="268" height="34" rx="17" fill="#fef3c7" stroke="#e8a72c"/><text x="154" y="88" text-anchor="middle">Finger touches button</text>
+      <rect x="20" y="118" width="268" height="34" rx="17" fill="#fef3c7" stroke="#e8a72c"/><text x="154" y="140" text-anchor="middle">Button presses down</text>
+      <rect x="20" y="170" width="268" height="34" rx="17" fill="#fef3c7" stroke="#e8a72c"/><text x="154" y="192" text-anchor="middle">Only the lamp face emits</text>
+      <rect x="20" y="222" width="268" height="34" rx="17" fill="#fde9b8" stroke="#d97706" stroke-width="2"/><text x="154" y="244" text-anchor="middle" font-weight="700">Light lands ahead of lamp axis</text>
+    </g>
+    <g fill="#d97706"><path d="M148 103 H160 L154 113 Z"/><path d="M148 155 H160 L154 165 Z"/><path d="M148 207 H160 L154 217 Z"/></g>
+    <text x="18" y="290" font-size="14" fill="#4b4060" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">One main action per shot: start → result</text>
+    <text x="18" y="314" font-size="14" fill="#4b4060" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">Directional output: source, axis, receiver</text>
+  </g>
+
+  <g fill="#b7aecb"><path d="M312 266 L328 272 L312 278 Z"/><path d="M620 266 L636 272 L620 278 Z"/><path d="M928 266 L944 272 L928 278 Z"/></g>
+
+  <!-- QC strip -->
+  <g transform="translate(24 466)">
+    <rect width="1232" height="66" rx="14" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="24" y="28" font-size="16" font-weight="700" fill="#14532d" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">Cross-artifact consistency gate</text>
+    <text x="24" y="52" font-size="14" fill="#166534" font-family="PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,Helvetica Neue,Arial,sans-serif">SKU · hands · scene · light direction · axis · camera side · state change · ratio · action order must agree; fix from the accepted upstream</text>
+    <text x="1208" y="42" text-anchor="end" font-size="14" font-weight="700" fill="#14532d" font-family="Menlo,Consolas,monospace">→ model_prompt.md</text>
+  </g>
+  <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#e8a72c"/></marker></defs>
+</svg>
