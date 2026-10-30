@@ -35,7 +35,7 @@ Read the linked skill before executing its stage:
 | Action prompt | `writing-video-prompts` | Turn the accepted shot rows into one model-neutral action/physics draft per clip | `action_prompt_draft.md` |
 | Model formatting | `minimax-h3-creative-director` for H3, this skill’s Omni formatter for Omni Flash | Convert the accepted plan into exactly one backend-specific final prompt and reference list | `model_prompt.md` |
 | Paid execution | this skill | Submit one request at a time, poll the same task, download the result and update the manifest | `submission_manifest.json`, `downloads/*.mp4` |
-| QC | this skill, optionally `video-analysis` | Verify technical validity, product identity, causal action, language and continuity | `qc/technical.json`, `qc/creative.json` |
+| QC | this skill with `ffmpeg`, `ffprobe`, sampled frames and local Whisper when speech matters | Verify technical validity, product identity, causal action, language and continuity | `qc/technical.json`, `qc/creative.json` |
 
 Do not create a second product brief, second shot list, second storyboard, second previs, or second final prompt for the same variant. A downstream stage reads and annotates the upstream artifact instead of rewriting it.
 
@@ -53,6 +53,7 @@ Persist the normalized backend profile in `pipeline_manifest.json`, every varian
 Rules:
 
 - If the user does not choose a backend, use `minimax-h3`.
+- Resolution defaults are backend-specific: **Omni Flash is 720p**, while the MiniMax H3 profile defaults to **768P**. Never copy H3's `768P` into an Omni brief or request. For the LK888 `omni-flash` adapter, 720p is the baseline output selected with `enable_upsample: false`; the current adapter omits the `resolution` field. Record `720p` as the intended output, and verify actual dimensions with `ffprobe` after download rather than treating a request setting as proof.
 - Normalize aliases before the first paid request and record both requested and provider-returned model names.
 - Omni Flash never inherits H3's 15-second allowance. An unspecified Omni duration defaults to 10 seconds. If 15 seconds was explicitly requested with Omni, never silently shorten it or switch the model: preserve 15 seconds as the deliverable target and plan multiple clips only if permitted by the brief; otherwise resolve this conflict before spending. If the user requested a 10-second adaptation, re-time shots and rewrite dialogue rather than mechanically accelerating them.
 - Both backends consume the same accepted `shot_rows.json`, product brief and references, with storyboard/previs only when the route requires them. Only the final prompt, reference selection and API envelope are backend-specific.
@@ -197,7 +198,7 @@ run/
 
 Record product source, target market and spoken locale, backend/model, duration, ratio, resolution, number of variants, and whether the user wants a preview or paid generation. Reuse already settled choices. If the user has said to decide missing creative choices, select and record a coherent option instead of reopening the same question.
 
-For MiniMax H3 online generation, keep the effective duration between 4 and 15 seconds, 24 FPS, and the final English prompt at or below 7000 characters. For Omni Flash, keep the effective duration at or below 10 seconds and use its `omni-reference` request envelope. Default only when the brief leaves it open: `minimax-h3`, 15 seconds, 9:16, 768P, and Mexican Spanish when the market is Mexico.
+For MiniMax H3 online generation, keep the effective duration between 4 and 15 seconds, 24 FPS, and the final English prompt at or below 7000 characters. For Omni Flash, use 4, 6, 8 or 10 seconds and its `omni-reference` request envelope. Record 720p as its baseline resolution; the LK888 request uses `enable_upsample: false` and does not send a `resolution` parameter. Default only when the brief leaves it open: `minimax-h3`, 15 seconds, 9:16, H3 768P or Omni Flash 720p, and Mexican Spanish when the market is Mexico.
 
 ### 2. Run reference-video intake when present
 
@@ -220,11 +221,11 @@ Do not infer a feature from a marketing phrase when the image or source does not
 Use `commerce-production-workflow` as the outer production order and `commerce-shot-grammar` as its internal shot-planning method. The single plan must contain:
 
 - one `shot_rows.json` with contiguous timings that sum to the target duration;
-- one chronological storyboard artifact only if `reference_plan.json` requires it;
-- one spatial/white-mesh previs artifact only when contact/direction/geometry risk requires it, derived from the same shot rows and any accepted storyboard;
+- one spatial/white-mesh previs artifact only when contact/direction/geometry risk requires it, derived from the structured shot rows;
+- one chronological storyboard artifact only if `reference_plan.json` requires it, derived from the accepted spatial previs;
 - one cross-artifact QC result.
 
-Create the reference plan before generating extra images, and refine it after QC without duplicating it. Omitted identity/storyboard/previs outputs are recorded as `not_required` with a reason; they need no placeholder file and are not failed gates. This orchestrator’s optional-artifact contract takes precedence over mandatory image-generation steps in the component skills. The shot rows are the source of truth for any generated planning images. `commerce-shot-grammar` supplies axis, blocking, camera, contact and state decisions; it must not create an independent competing shot table. The previs is for space and contact; the storyboard is for chronological visual beats. Keep their roles separate.
+Create the reference plan before generating extra images, and refine it after QC without duplicating it. Omitted identity/storyboard/previs outputs are recorded as `not_required` with a reason; they need no placeholder file and are not failed gates. This orchestrator’s optional-artifact contract takes precedence over mandatory image-generation steps in the component skills. The shot rows are the source of truth for any generated planning images. `commerce-shot-grammar` supplies axis, blocking, camera, contact and state decisions; it must not create an independent competing shot table. Establish the previs from those rows first; derive the storyboard from the accepted previs. The previs is for space and contact; the storyboard is for chronological visual beats. Keep their roles separate.
 
 For each beat, record: start/end time, shot size, camera position and movement, product orientation, hand ownership and contact point, product state before/after, environment anchors, lighting direction, proof purpose, and spoken line. A product action must show a causal chain such as `hand contacts button → button is pressed → the light emits from its lamp face → the illuminated area lies in front of the lamp axis`.
 

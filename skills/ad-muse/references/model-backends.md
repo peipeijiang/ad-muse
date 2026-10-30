@@ -25,19 +25,19 @@ Input shapes:
 
 ```json
 // brief.json (valid JSON without this comment)
-{"model":"omni-flash","duration":10,"aspect_ratio":"9:16","resolution":"768p","locale":"es-MX"}
+{"model":"omni-flash","duration":10,"aspect_ratio":"9:16","resolution":"720p","locale":"es-MX"}
 // shot_rows.json: one array; retain all creative fields alongside these times
 [{"start_sec":0,"end_sec":2},{"start_sec":2,"end_sec":10}]
 // reference_plan.json: selected image paths are absolute
 {"backend":"omni-flash","mode":"product_images_only","selected_images":[{"path":"/absolute/product.jpg","role":"SKU front and mounting direction","sha256":"actual file hash","qc":"pass"}]}
 ```
 
-The resolution value is an illustrative existing project value, not a capability guarantee. Check the current provider's supported resolution, duration choices, reference mode and price before any live submission. Do not fabricate accepted enum values.
+The default output resolution for `omni-flash` is **720p**, distinct from MiniMax H3's **768P** default. Set and record `720p` in the brief and provenance; do not inherit `768P` from an H3 profile. In this skill's current LK888 adapter, 720p is the intended baseline output: serialize `duration` and `enable_upsample: false` and omit `resolution`. The separate fixed 10-second alias uses provider defaults and omits duration, resolution and upsample fields. This is an adapter mapping, not a guarantee of actual encoded dimensions: verify the downloaded file with `ffprobe`. Reject a non-720p brief instead of silently changing it. Recheck current provider capabilities and pricing before live submission.
 
 | Model | Reference payload field | Local serializer envelope |
 |---|---|---|
 | `minimax-h3` | `params.image_url` | 4–15s, up to 9 images, prompt ≤7000 characters |
-| `omni-flash` | `params.images` | ≤10s, up to 3 images, prompt ≤4000 characters |
+| `omni-flash` | `params.images` | 4, 6, 8 or 10s, baseline 720p, up to 3 images, prompt ≤4000 characters |
 | `omni_flash-10s` | `params.images` | exactly 10s; same conservative 3-image cap; duration/resolution omitted as in the existing fixed-duration adapter |
 
 These mappings are grounded in the existing local adapter, not a new paid capability test. The legacy fixed-duration code permits seven images; this unified profile conservatively caps both Omni names at three until separately verified. Never truncate a selected reference list to fit a limit: revise the plan while preserving the required identity/direction evidence.
