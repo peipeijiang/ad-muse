@@ -18,72 +18,12 @@ AdMuse is an Agent Skill orchestration workflow; it does not render pixels itsel
 
 ## Highlights
 
-### 1. Shot-by-shot reference breakdown
+Every step from reference video to final cut has a concrete artifact and a pass condition.
 
-When you supply reference videos, AdMuse reads them before writing anything. hypit downloads each video, probes duration and aspect ratio, finds candidate cuts and extracts frames; the real edit points are then confirmed against the frames. The local Whisper `large-v3-turbo` model transcribes the original-language speech offline with word timings.
-
-Each shot records start/end time, shot size, aspect and framing, camera angle, composition, camera movement and speed, focus, lighting direction, transition, spoken words, sound and on-screen text, plus what to keep and what to replace with your product.
-
-**Output**: `reference_analysis.json` and `reference_analysis.md`, a shot-by-shot recreation blueprint.
-
-### 2. Shot planning
-
-`commerce-shot-grammar` decides, for every shot, the axis, blocking, camera position and movement, product orientation, which hand touches which part of the product, the product state before and after the action, environment anchors and lighting direction. Shot timings are contiguous and sum to the target duration.
-
-This shot table is the single source of truth. The storyboard, previs and prompts are all derived from it, so there is never a second, conflicting shot list.
-
-**Output**: `shot_rows.json`.
-
-### 3. Storyboard
-
-The shot table is drawn as a black-and-white multi-panel storyboard that lays out shot size, viewpoint, people and product state in time order. It fixes what happens first and what happens next. It is a visual reference and does not replace the shot table.
-
-**Output**: `storyboard.png` (generated when needed).
-
-### 4. White-mesh previs
-
-Untextured gray geometry blocks out the space: floor anchors, product and person placement, hand paths, camera positions, axis and frame safety. The previs inherits the storyboard's SKU, hands, background, camera side, lighting direction and product orientation; it is not a separate drawing.
-
-Previs is generated only when hand-product contact, installation, the direction of light/air/spray or complex camera movement is likely to go wrong. Simple shots skip it.
-
-**Output**: `previs.png` (generated when needed).
-
-### 5. Action chain
-
-`writing-video-prompts` rewrites the shot table as an action and physics draft. Each shot has one main action with a visible start, process and result, in causal order. For a bicycle lamp:
-
-```text
-finger touches button → button presses down → only the lamp face emits → the light patch lands on the road ahead of the lamp axis
-```
-
-No light may appear from behind the lamp, beside it or from the frame edge. Fans, sprays, screens and magnetic accessories follow the same pattern: source point → orientation → axis → receiving surface → visible result.
-
-**Output**: `action_prompt_draft.md`. It is model-neutral and never submitted directly.
-
-### 6. Cross-artifact consistency gate
-
-Before the final prompt is written, AdMuse compares SKU, hands, scene, lighting direction, axis, camera side, state changes, aspect ratio and action order across artifacts. A conflict is fixed by revising the downstream artifact from the accepted upstream one, never by inventing a third state. When an upstream artifact changes, downstream artifacts are invalidated by revision and hash, so a stale storyboard or prompt is never reused.
-
-### 7. Smart reference routing
-
-Each variant gets one `reference_plan.json` that selects the smallest reference set able to preserve the product look and action. When the product is simple, the source images show it clearly and the action is obvious, a few source images are enough. Identity images, the storyboard or previs are added only for ambiguous geometry or complex action. Unused artifacts are recorded as `not_required` with a reason.
-
-<p align="center"><img src="assets/reference-routing.svg" alt="Four reference-routing modes" width="100%"></p>
-
-| Mode | When |
-|---|---|
-| `product_images_only` | Source images show the product clearly, one simple state, obvious action |
-| `identity_plus_product` | Ambiguous geometry, several visible sides, or state-sensitive parts |
-| `storyboard_plus_product` | Several meaningful shots, or a reveal/proof sequence text alone won't preserve |
-| `full_spatial_reference` | Hand contact, installation, axis, light/air/spray direction or complex camera movement matters |
-
-A generated identity image that changes the SKU, geometry, orientation or control layout is discarded in favor of the verified source images.
-
-### 8. Paid-run safety and two-pass QC
-
-One request at a time: `submission.json` is written before each request and the task ID is recorded as soon as it returns. If the outcome is unclear, AdMuse checks the known task first instead of resubmitting. Downloads go to a `.part` file and are renamed to `.mp4` only after validation, with the SHA-256 recorded.
-
-Technical QC checks codec, duration, dimensions, frame rate and audio. Creative QC samples frames before the action, at contact, at the state change, at the proof result and at the end. Submitted, remote-final, downloaded, technical-pass and creative-pass counts are reported separately; technical success never implies creative acceptance.
+<p align="center"><img src="assets/highlights-1.en.svg" alt="Highlights 01–02: shot-by-shot reference breakdown, shot planning" width="100%"></p>
+<p align="center"><img src="assets/highlights-2.en.svg" alt="Highlights 03–04: storyboard, white-mesh previs" width="100%"></p>
+<p align="center"><img src="assets/highlights-3.en.svg" alt="Highlights 05–06: action chain, cross-artifact gate" width="100%"></p>
+<p align="center"><img src="assets/highlights-4.en.svg" alt="Highlights 07–08: smart reference routing, paid-run safety and two-pass QC" width="100%"></p>
 
 ## Workflow
 
@@ -142,6 +82,17 @@ flowchart TD
 | Final prompt | `minimax-h3-creative-director` or Omni formatter | `model_prompt.md` | Duration, image count, length and image roles fit the backend |
 | Submission | `prepare_request.py` → LK888 | `submission_manifest.json` | Paid run approved; one at a time; same task polled |
 | Acceptance | `ad-muse` | `downloads/*.mp4`, `qc/` | Technical and creative QC judged separately |
+
+**Reference-routing modes**
+
+| Mode | When |
+|---|---|
+| `product_images_only` | Source images show the product clearly, one simple state, obvious action |
+| `identity_plus_product` | Ambiguous geometry, several visible sides, or state-sensitive parts |
+| `storyboard_plus_product` | Several meaningful shots, or a reveal/proof sequence text alone won't preserve |
+| `full_spatial_reference` | Hand contact, installation, axis, light/air/spray direction or complex camera movement matters |
+
+A generated identity image that changes the SKU, geometry, orientation or control layout is discarded in favor of the verified source images.
 
 Reference-to-output allocation: with N references and M requested videos, each reference gets ⌊M/N⌋ outputs and the first M mod N references get one more; when M < N, only the first M are used. For example, 10 references and 20 videos means 2 per reference.
 
