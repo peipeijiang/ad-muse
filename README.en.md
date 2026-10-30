@@ -40,7 +40,7 @@ flowchart TD
   XQC{"Cross-artifact gate"}:::gate
   WVP["④ Action chain<br/>writing-video-prompts"]:::skill
   H3D["minimax-h3-creative-director<br/>final H3 prompt"]:::model
-  OMF["Omni formatter<br/>≤10 s · ≤3 images"]:::model
+  OMF["Omni formatter<br/>≤10 s · ≤7 images (10s) / ≤3 (variable)"]:::model
   G2{"Paid-run approval"}:::gate
   SUB["prepare_request.py → LK888<br/>serial submit · poll same task"]:::tool
   QC["Local download · technical QC · creative QC"]:::tool
@@ -119,7 +119,8 @@ Paid generation uses your own LK888/upDrama account, with the key supplied throu
 | Backend | Duration | Reference images | Prompt | When |
 |---|---|---|---|---|
 | `minimax-h3` | 4–15 s, 24 FPS | up to 9 | ≤7000 chars | Default |
-| `omni-flash` / `omni_flash-10s` | ≤10 s | up to 3 | ≤4000 chars | Explicit choice |
+| `omni_flash-10s` | fixed 10 s, 720P, 16:9 / 9:16 | 1–7 (provider allows 0; AdMuse requires ≥1 verified product image; some channels accept only 1) | ≤4000 chars | Explicit choice |
+| `omni-flash` | 4/6/8/10 s, 720P, 16:9 / 9:16 | 1–3 | ≤4000 chars | Explicit choice |
 
 Both backends share the same shot table, product brief and references; only the final prompt, reference selection and request envelope differ. If Omni Flash is selected with a 15-second request, AdMuse does not silently shorten it or switch models; it proposes a multi-clip plan or asks you to adjust the brief.
 

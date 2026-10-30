@@ -3,7 +3,7 @@ name: ad-muse
 description: "AdMuse: produce product-faithful ecommerce videos from a product URL or image, optionally recreating supplied reference videos, through the default MiniMax H3 backend or an explicitly selected Omni Flash backend. Use one canonical product dossier, shot plan, optional storyboard/previs and model-specific final prompt, then submit, poll, download and QC each render."
 license: MIT
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
   category: creative
   summary: "AdMuse · 广告缪斯 — from product evidence and reference inspiration to locally validated MiniMax H3 or Omni Flash videos."
 ---
@@ -48,18 +48,18 @@ Persist the normalized backend profile in `pipeline_manifest.json`, every varian
 | Backend | Accepted model names | Duration contract | Reference/prompt adapter |
 |---|---|---|---|
 | `minimax-h3` | `minimax-h3` (record the provider alias when it differs) | 4–15 seconds | `minimax-h3-creative-director`; H3 reference router |
-| `omni-flash` | `omni-flash` or provider fixed-duration `omni_flash-10s` | **At most 10 seconds**; reject longer requests instead of silently truncating | This skill’s `omni-reference` request adapter |
+| `omni-flash` | `omni_flash-10s` (fixed 10s, 1–7 refs) or `omni-flash` (4/6/8/10s, 1–3 refs); both 16:9 or 9:16, 720P | **At most 10 seconds**; reject longer requests instead of silently truncating | This skill’s `omni-reference` request adapter |
 
 Rules:
 
 - If the user does not choose a backend, use `minimax-h3`.
-- Resolution defaults are backend-specific: **Omni Flash is 720p**, while the MiniMax H3 profile defaults to **768P**. Never copy H3's `768P` into an Omni brief or request. For the LK888 `omni-flash` adapter, 720p is the baseline output selected with `enable_upsample: false`; the current adapter omits the `resolution` field. Record `720p` as the intended output, and verify actual dimensions with `ffprobe` after download rather than treating a request setting as proof.
+- Resolution defaults are backend-specific: **Omni Flash is 720p**, while the MiniMax H3 profile defaults to **768P**. Never copy H3's `768P` into an Omni brief or request. `omni_flash-10s` is fixed 720P and its `params` carry only `aspect_ratio` and `images`; `omni-flash` selects the 720p baseline with `enable_upsample: false` and `enhance_prompt: false`. Neither Omni request sends a `resolution` field. Record `720p` as the intended output, and verify actual dimensions with `ffprobe` after download rather than treating a request setting as proof.
 - Normalize aliases before the first paid request and record both requested and provider-returned model names.
 - Omni Flash never inherits H3's 15-second allowance. An unspecified Omni duration defaults to 10 seconds. If 15 seconds was explicitly requested with Omni, never silently shorten it or switch the model: preserve 15 seconds as the deliverable target and plan multiple clips only if permitted by the brief; otherwise resolve this conflict before spending. If the user requested a 10-second adaptation, re-time shots and rewrite dialogue rather than mechanically accelerating them.
 - Both backends consume the same accepted `shot_rows.json`, product brief and references, with storyboard/previs only when the route requires them. Only the final prompt, reference selection and API envelope are backend-specific.
 - Store exactly one backend-specific prompt as `model_prompt.md`; do not write a second H3/Omni prompt for the same variant.
 
-For `omni-flash`, read [model-backends.md](references/model-backends.md) and use this skill’s request adapter; do not call the legacy prompt-rebuilding submission flow. Select at most three references, in this order when each is needed: chronological storyboard, verified product identity/source image, then an operation or spatial reference. Omit a reference that is not needed or fails QC. Record selected roles, hashes and reasons in `reference_plan.json`.
+For `omni-flash`, read [model-backends.md](references/model-backends.md) and use this skill’s request adapter; do not call the legacy prompt-rebuilding submission flow. Select the fewest references that carry the required evidence (commonly one verified product image): at most seven for `omni_flash-10s`, at most three for `omni-flash`, in this order when each is needed: chronological storyboard, verified product identity/source image, then an operation or spatial reference. Some channels accept fewer images than the model limit (some only one); an over-limit task can fail with an automatic refund, after which reduce the plan with a recorded reason and retry. The provider allows zero images for `omni_flash-10s`, but AdMuse requires at least one verified product/identity reference; that is product policy, not an API limit. Omit a reference that is not needed or fails QC; never silently slice a reviewed set. Record selected roles, hashes and reasons in `reference_plan.json`.
 
 ## Reference-video mode
 
@@ -129,10 +129,10 @@ Use these modes:
 
 | Mode | Include | Choose when |
 |---|---|---|
-| `product_images_only` | Two to four verified product images, including a use-context image when available | Product identity is clear, the product stays in one simple state, the action is obvious, and no complex spatial or directional behavior must be copied; for Omni Flash, trim this to its provider limit |
-| `identity_plus_product` | Identity reference set plus the minimum verified source images | The product has ambiguous geometry, multiple visible sides, state-sensitive parts or the generated identity image is needed to keep the SKU stable; for Omni Flash, the selected set must still fit its three-reference limit |
+| `product_images_only` | Two to four verified product images, including a use-context image when available | Product identity is clear, the product stays in one simple state, the action is obvious, and no complex spatial or directional behavior must be copied; for Omni Flash, reduce this to the selected model's limit by plan revision, not slicing |
+| `identity_plus_product` | Identity reference set plus the minimum verified source images | The product has ambiguous geometry, multiple visible sides, state-sensitive parts or the generated identity image is needed to keep the SKU stable; for Omni Flash, the selected set must still fit the model limit (7 for `omni_flash-10s`, 3 for `omni-flash`) |
 | `storyboard_plus_product` | Accepted storyboard plus product images; identity set only if its gate requires it | The reference has several meaningful shots, fast but readable changes, or a product reveal/proof sequence that prompt text alone will not preserve |
-| `full_spatial_reference` | Storyboard, previs and the minimum product/identity references | Hand-object contact, installation, axis, light/air/spray direction, multi-location movement or complex camera geometry materially affects the recreation; for Omni Flash, reduce this to the three most informative references |
+| `full_spatial_reference` | Storyboard, previs and the minimum product/identity references | Hand-object contact, installation, axis, light/air/spray direction, multi-location movement or complex camera geometry materially affects the recreation; for Omni Flash, reduce this to the most informative references within the model limit |
 
 The router must be conservative about adding references and conservative about omitting identity. If raw source images correctly show the SKU and the usage scene is simple, `product_images_only` is preferred. If a storyboard or previs is not needed, omit it. If a reference image is wrong, exclude it and keep the verified source image instead. Never exceed the selected backend's official image limit; record each selected image's role, path, hash and reason.
 
@@ -198,7 +198,7 @@ run/
 
 Record product source, target market and spoken locale, backend/model, duration, ratio, resolution, number of variants, and whether the user wants a preview or paid generation. Reuse already settled choices. If the user has said to decide missing creative choices, select and record a coherent option instead of reopening the same question.
 
-For MiniMax H3 online generation, keep the effective duration between 4 and 15 seconds, 24 FPS, and the final English prompt at or below 7000 characters. For Omni Flash, use 4, 6, 8 or 10 seconds and its `omni-reference` request envelope. Record 720p as its baseline resolution; the LK888 request uses `enable_upsample: false` and does not send a `resolution` parameter. Default only when the brief leaves it open: `minimax-h3`, 15 seconds, 9:16, H3 768P or Omni Flash 720p, and Mexican Spanish when the market is Mexico.
+For MiniMax H3 online generation, keep the effective duration between 4 and 15 seconds, 24 FPS, and the final English prompt at or below 7000 characters. For Omni Flash, use `omni_flash-10s` (exactly 10 seconds) or `omni-flash` (4, 6, 8 or 10 seconds), ratio 16:9 or 9:16, and the `omni-reference` request envelope. Record 720p as its resolution; neither Omni request sends a `resolution` parameter. Default only when the brief leaves it open: `minimax-h3`, 15 seconds, 9:16, H3 768P or Omni Flash 720p, and Mexican Spanish when the market is Mexico.
 
 ### 2. Run reference-video intake when present
 
@@ -254,13 +254,13 @@ When a reference blueprint exists, create `reference_plan.json` first and pass i
 
 Because product images are reusable identity references, use the H3 full-reference route unless the user explicitly declares literal boundary-only frames with no identity or reusable reference role. If the video has intentional cuts, carry the confirmed shot plan into the H3 multishot route.
 
-For `omni-flash`, read [model-backends.md](references/model-backends.md). Format the action draft as reference roles, global appearance/style, timed shots, exact dialogue/sound and product/physics constraints. Serialize only the selected and reviewed images into one `omni-reference` request, with no more than three images. Simple products may use original product images alone. The prompt must fit the 0–10 second timeline, state the target language and sound/dialogue, and explicitly forbid reproducing the storyboard grid.
+For `omni-flash`, read [model-backends.md](references/model-backends.md). Format the action draft as reference roles, global appearance/style, timed shots, exact dialogue/sound and product/physics constraints. Serialize only the selected and reviewed images into one `omni-reference` request, within the model limit (1–7 for `omni_flash-10s`, 1–3 for `omni-flash`). Simple products may use original product images alone. The prompt must fit the 0–10 second timeline, state the target language and sound/dialogue, and explicitly forbid reproducing the storyboard grid.
 
 Write exactly one `model_prompt.md` for either branch. Before submission, check the selected backend envelope: H3 is 4–15 seconds and 24 FPS; Omni Flash is at most 10 seconds and its provider-supported frame/ratio settings. In both branches check prompt length, image count, role labels, timing sum, dialogue fit, sound section, and no contradiction between cuts, keyframes, references and audio. Keep the product identity reference order stable across variants.
 
 ### 7. Submit serially through LK888
 
-Use `scripts/prepare_request.py` to prepare and structurally validate the selected backend request as described in [model-backends.md](references/model-backends.md). Then use the approved LK888/upDrama submission path already configured in the project, sending the exact payload. The serializer does not itself submit. Do not silently switch provider, model or reference mode. Create one `submission.json` and one row in `submission_manifest.json` before each POST, including:
+Use `scripts/prepare_request.py` to prepare and structurally validate the selected backend request as described in [model-backends.md](references/model-backends.md). Then use the approved LK888/upDrama submission path already configured in the project, sending the exact payload (Omni: `POST https://api.lk888.ai/v1/media/generate`; top level `model`/`prompt`/`params`, optional top-level `notify_url`). Reference images go as provider https URLs when the plan has them; otherwise the serializer's data URL is an unverified compatibility path that needs one authorized smoke test per channel before a formal batch. The serializer does not itself submit. Do not silently switch provider, model or reference mode. Create one `submission.json` and one row in `submission_manifest.json` before each POST, including:
 
 ```text
 variant_id, prompt_sha256, reference_paths_and_sha256,
@@ -273,7 +273,7 @@ Submit one variant at a time. After each request, record the returned task ID an
 
 ### 8. Poll and download
 
-Poll the exact task ID until it is final. Never submit a replacement while the task is pending. When a final output URL is available, download to a `.part` file, validate the file, then atomically rename it to the final `.mp4`. Preserve the task response, output URL and SHA-256 in the manifest.
+Poll the exact task ID until it is final. For Omni, call `GET https://api.lk888.ai/v1/media/status?task_id={task_id}` every 3–5 seconds; check `is_final === true` first, then `state` (`pending`/`running`/`success`/`failed`). Never branch on the Chinese display fields `status` or `status_group`. A `failed` task is already refunded automatically; record it. Never submit a replacement while the task is pending. When a final output URL is available, download to a `.part` file, validate the file, then atomically rename it to the final `.mp4`. Preserve the task response, output URL and SHA-256 in the manifest.
 
 ### 9. Run two QC passes
 
