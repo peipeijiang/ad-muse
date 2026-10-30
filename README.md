@@ -30,7 +30,7 @@ $ad-muse 用这个 1688 链接做 5 条墨西哥西语视频，15 秒，9:16，7
 参考视频：https://www.tiktok.com/@xxx/video/123 、https://www.tiktok.com/@yyy/video/456
 ```
 
-付费生成需要你自己的 LK888/upDrama 账号，密钥通过环境变量提供（`LK888_API_KEY`；商品图分析使用 `LAOZHANG_API_KEY`）。没有付费授权时，AdMuse 只输出可审阅的提示词和请求文件。
+付费生成需要你自己的 LK888/upDrama 账号，密钥通过环境变量 `LK888_API_KEY` 提供。商品图分析由当前 Agent 的多模态大模型直接看图完成，不需要额外的视觉 API 或密钥。没有付费授权时，AdMuse 只输出可审阅的提示词和请求文件。
 
 ## 工作流程
 
@@ -63,11 +63,6 @@ flowchart TD
   G2 --> SUB --> QC --> OUT
   QC -.未通过且已授权重做.-> WVP
 
-  JD["judian-skills 分镜语法"]:::ref
-  YC["影策短剧制作工作流"]:::ref
-  JD -. 改编来源 .-> CSG
-  YC -. 改编来源 .-> CPW
-
   classDef input fill:#fef3c7,stroke:#d97706,color:#1f2937
   classDef skill fill:#ede9fe,stroke:#7c3aed,color:#1f2937
   classDef tool fill:#e0f2fe,stroke:#0284c7,color:#1f2937
@@ -75,7 +70,6 @@ flowchart TD
   classDef gate fill:#fff7ed,stroke:#ea580c,color:#1f2937
   classDef artifact fill:#f1f5f9,stroke:#64748b,color:#1f2937
   classDef output fill:#dcfce7,stroke:#16a34a,color:#1f2937
-  classDef ref fill:#ffffff,stroke:#94a3b8,stroke-dasharray:4 3,color:#64748b
 ```
 
 每个环节只产出一份正式文件，下游在上游文件上标注，不另起一份：一份商品简报、一份 `shot_rows.json`、每条变体一份 `model_prompt.md`。分镜图、previs 和身份图按需生成，不需要时在清单中记录 `not_required` 和原因。
@@ -131,8 +125,8 @@ flowchart TD
 | Skill | 职责 | 来源 |
 |---|---|---|
 | `ad-muse` | 总编排 | 本仓库 |
-| `commerce-production-workflow` | 生产顺序、门禁、跨产物 QC | 本仓库（改编） |
-| `commerce-shot-grammar` | 轴线、走位、机位、接触与状态 | 本仓库（改编） |
+| `commerce-production-workflow` | 生产顺序、门禁、跨产物 QC | 本仓库 |
+| `commerce-shot-grammar` | 轴线、走位、机位、接触与状态 | 本仓库 |
 | `product-ugc-pipeline` | 商品抓取、素材清单、商品简报、身份参考图 | [peipeijiang/product-ugc-pipeline](https://github.com/peipeijiang/product-ugc-pipeline) |
 | `writing-video-prompts` | 与模型无关的动作和物理草稿 | [SupercmoHQ/superCMO-skills](https://github.com/SupercmoHQ/superCMO-skills) |
 | `minimax-h3-*`（6 个） | H3 路由、参考/文本/首尾帧/多镜头提示词与审查 | [unknowlei/minimax-h3-opencode-skills](https://github.com/unknowlei/minimax-h3-opencode-skills) |
@@ -143,4 +137,4 @@ flowchart TD
 
 ## 许可
 
-[MIT](LICENSE)。改编内容的来源和第三方 Skill 的许可证见 [NOTICE.md](NOTICE.md)。
+[MIT](LICENSE)。第三方 Skill 的来源与许可证见 [NOTICE.md](NOTICE.md)。
