@@ -1,0 +1,171 @@
+{
+  "schema": 1,
+  "skill_repo": {
+    "github": "peipeijiang/ad-muse",
+    "ref": "main"
+  },
+  "skills": [
+    {
+      "name": "ad-muse",
+      "role": "Orchestrator",
+      "source": {
+        "type": "bundled",
+        "github": "peipeijiang/ad-muse",
+        "ref": "main",
+        "path": "skills/ad-muse"
+      }
+    },
+    {
+      "name": "product-ugc-pipeline",
+      "role": "Product intake: source extraction, asset manifest, product brief, identity references",
+      "source": {
+        "type": "github",
+        "github": "peipeijiang/product-ugc-pipeline",
+        "ref": "main",
+        "path": ""
+      }
+    },
+    {
+      "name": "commerce-production-workflow",
+      "role": "Production order, gates and cross-artifact QC",
+      "source": {
+        "type": "bundled",
+        "github": "peipeijiang/ad-muse",
+        "ref": "main",
+        "path": "skills/commerce-production-workflow"
+      }
+    },
+    {
+      "name": "commerce-shot-grammar",
+      "role": "Shot rows: axis, blocking, camera, contact and state",
+      "source": {
+        "type": "bundled",
+        "github": "peipeijiang/ad-muse",
+        "ref": "main",
+        "path": "skills/commerce-shot-grammar"
+      }
+    },
+    {
+      "name": "writing-video-prompts",
+      "role": "Model-neutral action and physics draft",
+      "source": {
+        "type": "github",
+        "github": "SupercmoHQ/superCMO-skills",
+        "ref": "main",
+        "path": "skills/writing-video-prompts"
+      }
+    },
+    {
+      "name": "minimax-h3-creative-director",
+      "role": "H3 entrypoint and routing",
+      "source": {
+        "type": "github",
+        "github": "unknowlei/minimax-h3-opencode-skills",
+        "ref": "main",
+        "path": "skills/minimax-h3-creative-director"
+      }
+    },
+    {
+      "name": "minimax-h3-reference-video-prompt",
+      "role": "H3 full-reference prompt",
+      "source": {
+        "type": "github",
+        "github": "unknowlei/minimax-h3-opencode-skills",
+        "ref": "main",
+        "path": "skills/minimax-h3-reference-video-prompt"
+      }
+    },
+    {
+      "name": "minimax-h3-text-video-prompt",
+      "role": "H3 text-only prompt",
+      "source": {
+        "type": "github",
+        "github": "unknowlei/minimax-h3-opencode-skills",
+        "ref": "main",
+        "path": "skills/minimax-h3-text-video-prompt"
+      }
+    },
+    {
+      "name": "minimax-h3-keyframe-video-prompt",
+      "role": "H3 literal first/last-frame prompt",
+      "source": {
+        "type": "github",
+        "github": "unknowlei/minimax-h3-opencode-skills",
+        "ref": "main",
+        "path": "skills/minimax-h3-keyframe-video-prompt"
+      }
+    },
+    {
+      "name": "minimax-h3-multishot-planner",
+      "role": "H3 multishot planning",
+      "source": {
+        "type": "github",
+        "github": "unknowlei/minimax-h3-opencode-skills",
+        "ref": "main",
+        "path": "skills/minimax-h3-multishot-planner"
+      }
+    },
+    {
+      "name": "minimax-h3-prompt-reviewer",
+      "role": "H3 prompt review and repair",
+      "source": {
+        "type": "github",
+        "github": "unknowlei/minimax-h3-opencode-skills",
+        "ref": "main",
+        "path": "skills/minimax-h3-prompt-reviewer"
+      }
+    },
+    {
+      "name": "h3-prompt-writing",
+      "role": "Official H3 prompt syntax",
+      "source": {
+        "type": "github",
+        "github": "MiniMax-AI/MiniMax-H3",
+        "ref": "main",
+        "path": "skills/h3-prompt-writing"
+      }
+    },
+    {
+      "name": "hypit",
+      "role": "Reference-video download, probe, boundaries and frames",
+      "source": {
+        "type": "github",
+        "github": "hypit-ai/hypit",
+        "ref": "main",
+        "path": "skills/hypit"
+      }
+    }
+  ],
+  "tools": [
+    {
+      "name": "git",
+      "required": true,
+      "purpose": "Install missing skills"
+    },
+    {
+      "name": "ffmpeg",
+      "required": true,
+      "purpose": "Frames and media checks"
+    },
+    {
+      "name": "ffprobe",
+      "required": true,
+      "purpose": "Technical QC"
+    },
+    {
+      "name": "hypit",
+      "required": false,
+      "purpose": "Reference-video mode",
+      "install_hint": "npm install -g @hypit/hypit"
+    }
+  ],
+  "asr": {
+    "backend": "openai-whisper",
+    "default_model": "large-v3-turbo",
+    "alternatives": [
+      "small",
+      "base"
+    ],
+    "download": false
+  }
+}

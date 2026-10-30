@@ -1,0 +1,6 @@
+interface:
+  display_name: "AdMuse · 广告缪斯"
+  short_description: "从商品与灵感，到带货成片：H3 默认，Omni Flash 可选，本地下载与验收"
+  default_prompt: "Use $ad-muse to turn this product URL and optional reference videos into product-faithful MiniMax H3 videos by default, or Omni Flash when explicitly selected, with local downloads and QC."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-label="AdMuse · 广告缪斯 — 从商品与灵感，到带货成片">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#150f2e"/>
+      <stop offset="0.55" stop-color="#2a1245"/>
+      <stop offset="1" stop-color="#4a1236"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffd38a"/>
+      <stop offset="0.5" stop-color="#ff8fb1"/>
+      <stop offset="1" stop-color="#b9a4ff"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff4c9" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#fff4c9" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ff8fb1" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#ff8fb1" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="screen"><rect x="0" y="0" width="150" height="266" rx="14"/></clipPath>
+  </defs>
+  <rect width="1280" height="420" fill="url(#bg)"/>
+  <circle cx="980" cy="210" r="260" fill="url(#glow)"/>
+  <g stroke="#ffffff" stroke-opacity="0.06">
+    <path d="M0 105H1280M0 210H1280M0 315H1280"/>
+    <path d="M160 0V420M320 0V420M480 0V420M640 0V420M800 0V420M960 0V420M1120 0V420"/>
+  </g>
+
+  <g font-family="'PingFang SC','Noto Sans SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif">
+    <text x="88" y="168" font-size="96" font-weight="800" fill="url(#title)" letter-spacing="-2">AdMuse</text>
+    <text x="92" y="226" font-size="38" font-weight="600" fill="#f4ecff" letter-spacing="6">广告缪斯</text>
+    <text x="92" y="284" font-size="26" fill="#e3d8f5">从商品与灵感，到带货成片。</text>
+    <text x="92" y="320" font-size="20" fill="#b9acd6">Turn products and inspiration into video ads.</text>
+    <g font-size="15" fill="#f4ecff">
+      <rect x="92" y="346" width="132" height="32" rx="16" fill="#ffffff" fill-opacity="0.10" stroke="#ffd38a" stroke-opacity="0.6"/>
+      <text x="158" y="367" text-anchor="middle">MiniMax H3</text>
+      <rect x="236" y="346" width="132" height="32" rx="16" fill="#ffffff" fill-opacity="0.10" stroke="#ff8fb1" stroke-opacity="0.6"/>
+      <text x="302" y="367" text-anchor="middle">Omni Flash</text>
+      <rect x="380" y="346" width="132" height="32" rx="16" fill="#ffffff" fill-opacity="0.10" stroke="#b9a4ff" stroke-opacity="0.6"/>
+      <text x="446" y="367" text-anchor="middle">Local QC</text>
+    </g>
+  </g>
+
+  <!-- product card -> phone frames -->
+  <g transform="translate(700 120)">
+    <rect width="150" height="180" rx="16" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.25"/>
+    <rect x="45" y="58" width="60" height="38" rx="9" fill="#2c2c34" stroke="#d9d9e3" stroke-width="2"/>
+    <circle cx="62" cy="77" r="9" fill="#fff4c9"/>
+    <circle cx="88" cy="77" r="9" fill="#fff4c9"/>
+    <rect x="70" y="96" width="10" height="34" fill="#6c6c7a"/>
+    <rect x="36" y="130" width="78" height="8" rx="4" fill="#6c6c7a"/>
+    <text x="75" y="166" text-anchor="middle" font-size="14" fill="#cfc3ea" font-family="'PingFang SC','Noto Sans SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif">product</text>
+  </g>
+  <path d="M866 210h44" stroke="#ffd38a" stroke-width="3" stroke-linecap="round" marker-end="url(#a)"/>
+  <path d="M902 202l10 8-10 8" fill="none" stroke="#ffd38a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g transform="translate(930 77)">
+    <rect x="-6" y="-6" width="162" height="278" rx="20" fill="#0d0b18" stroke="#ffffff" stroke-opacity="0.35"/>
+    <g clip-path="url(#screen)">
+      <rect width="150" height="266" fill="#1d1730"/>
+      <rect y="190" width="150" height="76" fill="#2b2240"/>
+      <path d="M58 132 L150 96 L150 196 Z" fill="url(#beam)"/>
+      <ellipse cx="132" cy="196" rx="34" ry="9" fill="#fff4c9" fill-opacity="0.45"/>
+      <rect x="22" y="118" width="40" height="26" rx="7" fill="#2c2c34" stroke="#d9d9e3" stroke-width="1.5"/>
+      <circle cx="33" cy="131" r="6" fill="#fff4c9"/>
+      <circle cx="51" cy="131" r="6" fill="#fff4c9"/>
+      <path d="M0 150 H70" stroke="#8c8c9a" stroke-width="5"/>
+      <rect x="10" y="226" width="130" height="8" rx="4" fill="#ffffff" fill-opacity="0.25"/>
+      <rect x="10" y="226" width="78" height="8" rx="4" fill="#ff8fb1"/>
+      <text x="14" y="30" font-size="13" fill="#ffd38a" font-family="'PingFang SC','Noto Sans SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif">0–15s · 9:16</text>
+    </g>
+  </g>
+  <g transform="translate(1104 120)" opacity="0.75">
+    <rect width="96" height="170" rx="13" fill="#0d0b18" stroke="#ffffff" stroke-opacity="0.3"/>
+    <rect x="8" y="10" width="80" height="44" rx="5" fill="#ffffff" fill-opacity="0.10"/>
+    <rect x="8" y="62" width="80" height="44" rx="5" fill="#ffffff" fill-opacity="0.10"/>
+    <rect x="8" y="114" width="80" height="44" rx="5" fill="#ffffff" fill-opacity="0.10"/>
+    <path d="M30 26l12 6-12 6z M30 78l12 6-12 6z M30 130l12 6-12 6z" fill="#b9a4ff"/>
+    <path d="M52 30h28M52 82h22M52 134h26" stroke="#e3d8f5" stroke-opacity="0.6" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>
