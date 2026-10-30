@@ -30,7 +30,7 @@ $ad-muse Make 5 Mexican-Spanish videos from this 1688 link, 15 s, 9:16, 768P.
 Reference videos: https://www.tiktok.com/@xxx/video/123, https://www.tiktok.com/@yyy/video/456
 ```
 
-Paid generation uses your own LK888/upDrama account, with keys supplied through environment variables (`LK888_API_KEY`; product-image analysis uses `LAOZHANG_API_KEY`). Without paid-run approval, AdMuse stops at reviewable prompts and request files.
+Paid generation uses your own LK888/upDrama account, with the key supplied through the `LK888_API_KEY` environment variable. Product-image analysis is done directly by the current agent's multimodal model; no extra vision API or key is needed. Without paid-run approval, AdMuse stops at reviewable prompts and request files.
 
 ## Workflow
 
@@ -63,11 +63,6 @@ flowchart TD
   G2 --> SUB --> QC --> OUT
   QC -.fail + authorized rerender.-> WVP
 
-  JD["judian-skills shot grammar"]:::ref
-  YC["Yingce short-drama workflow"]:::ref
-  JD -. adapted from .-> CSG
-  YC -. adapted from .-> CPW
-
   classDef input fill:#fef3c7,stroke:#d97706,color:#1f2937
   classDef skill fill:#ede9fe,stroke:#7c3aed,color:#1f2937
   classDef tool fill:#e0f2fe,stroke:#0284c7,color:#1f2937
@@ -75,7 +70,6 @@ flowchart TD
   classDef gate fill:#fff7ed,stroke:#ea580c,color:#1f2937
   classDef artifact fill:#f1f5f9,stroke:#64748b,color:#1f2937
   classDef output fill:#dcfce7,stroke:#16a34a,color:#1f2937
-  classDef ref fill:#ffffff,stroke:#94a3b8,stroke-dasharray:4 3,color:#64748b
 ```
 
 Each stage owns one canonical file, and downstream stages annotate it instead of writing a second copy: one product brief, one `shot_rows.json`, and one `model_prompt.md` per variant. Storyboards, previs and identity images are created only when needed; otherwise the manifest records `not_required` with a reason.
@@ -131,8 +125,8 @@ For products with directional output, the prompt spells out the causal chain and
 | Skill | Role | Source |
 |---|---|---|
 | `ad-muse` | Orchestrator | this repository |
-| `commerce-production-workflow` | Production order, gates, cross-artifact QC | this repository (adapted) |
-| `commerce-shot-grammar` | Axis, blocking, camera, contact and state | this repository (adapted) |
+| `commerce-production-workflow` | Production order, gates, cross-artifact QC | this repository |
+| `commerce-shot-grammar` | Axis, blocking, camera, contact and state | this repository |
 | `product-ugc-pipeline` | Product scraping, asset manifest, brief, identity references | [peipeijiang/product-ugc-pipeline](https://github.com/peipeijiang/product-ugc-pipeline) |
 | `writing-video-prompts` | Model-neutral action and physics draft | [SupercmoHQ/superCMO-skills](https://github.com/SupercmoHQ/superCMO-skills) |
 | `minimax-h3-*` (6) | H3 routing, reference/text/keyframe/multishot prompts and review | [unknowlei/minimax-h3-opencode-skills](https://github.com/unknowlei/minimax-h3-opencode-skills) |
@@ -143,4 +137,4 @@ Local tools are checked, not installed: `git`, `ffmpeg` and `ffprobe` are requir
 
 ## License
 
-[MIT](LICENSE). Origins of adapted content and licenses of third-party skills are listed in [NOTICE.md](NOTICE.md).
+[MIT](LICENSE). Sources and licenses of third-party skills are listed in [NOTICE.md](NOTICE.md).
