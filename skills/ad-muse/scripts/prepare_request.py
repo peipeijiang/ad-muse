@@ -67,15 +67,24 @@ def build_request(variant_dir):
         provenance.append({'path': str(path), 'sha256': sha, 'role': ref['role']})
     params = {'aspect_ratio': brief['aspect_ratio']}
     params['image_url' if h3 else 'images'] = encoded
-    if model != 'omni_flash-10s':
+    if h3:
         if not brief.get('resolution'):
             raise ValueError('Explicit provider-supported resolution required')
         params.update(duration=format(duration, 'g'), resolution=brief['resolution'])
+    elif model == 'omni-flash':
+        if duration not in (4, 6, 8, 10):
+            raise ValueError('Omni Flash supports 4, 6, 8 or 10 seconds')
+        if str(brief.get('resolution', '720p')).lower() != '720p':
+            raise ValueError('Omni Flash baseline route supports 720p only')
+        params.update(duration=format(duration, 'g'), enable_upsample=False)
+    elif str(brief.get('resolution', '720p')).lower() != '720p':
+        raise ValueError('Fixed-duration Omni Flash baseline route supports 720p only')
     payload = {'model': model, 'prompt': prompt, 'params': params}
     evidence = {'backend': backend, 'model': model, 'duration': duration,
                 'prompt_path': str(prompt_path), 'prompt_sha256': digest(prompt_bytes),
                 'reference_mode': 'full-reference' if h3 else 'omni-reference',
                 'reference_images': provenance, 'locale': brief['locale'],
+                'resolution': brief.get('resolution', '720p' if not h3 else None),
                 'validation': 'structural_only', 'submitted': False}
     return payload, evidence
 

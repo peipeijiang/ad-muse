@@ -1,3 +1,3 @@
 interface:
   display_name: "带货分镜语法"
-  short_description: "基于影策分镜语法产出故事板和动作预演"
+  short_description: "基于影策分镜语法，先定空间预演再排出连续故事板"
