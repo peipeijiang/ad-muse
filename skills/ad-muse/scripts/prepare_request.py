@@ -8,6 +8,7 @@ import math
 import mimetypes
 from pathlib import Path
 from urllib.parse import urlparse
+from validate_reference_plan import validate as validate_routing
 
 # Exact LK888 Omni profiles. The provider also accepts zero images
 # (text-to-video); AdMuse requires at least one verified product reference.
@@ -33,6 +34,7 @@ def build_request(variant_dir):
     brief = json.loads((root / 'brief.json').read_text())
     plan = json.loads((root / 'reference_plan.json').read_text())
     shots = json.loads((root / 'shot_rows.json').read_text())
+    routing = validate_routing(root)
     model = brief.get('model', 'minimax-h3')
     if model != 'minimax-h3' and model not in OMNI_PROFILES:
         raise ValueError('Unsupported model; use minimax-h3, omni-flash or omni_flash-10s')
@@ -128,7 +130,7 @@ def build_request(variant_dir):
                 'resolution': brief.get('resolution', '720p' if not h3 else None),
                 'param_keys': sorted(params), 'notify_url_registered': notify_url is not None,
                 'data_url_smoke_test_required': 'data_url_compat' in transports,
-                'validation': 'structural_only', 'submitted': False}
+                'routing': routing, 'validation': 'structural_only', 'submitted': False}
     return payload, evidence
 
 

@@ -16,6 +16,8 @@ AdMuse is an Agent Skill orchestration workflow; it does not render pixels itsel
 
 When spatial previs is needed, generate and inspect the black-and-white storyboard first, then use it with shared shot data and product references to create grayscale white-model previs. Keep the spatial map dominant, with a product sidebar and compact camera cards; add targeted framing previews only when useful. Hooks, locations and actions follow the current storyboard, and scale follows the current product dossier. No warehouse, pickup action or palm-sized product is assumed. Record conceptual QC, measured geometry verification and user acceptance separately.
 
+The router evaluates identity, interaction, state/time, spatial relationships and evidence coverage per shot, across product categories and settings. Simple static displays can use product references alone; operations need state/action evidence, temporal continuity needs a storyboard, and complex spatial relationships also need previs. Reuse adequate existing references and generate only missing evidence. Pre-submission checks enforce declared risks, coverage and hashes; they do not replace visual QC.
+
 <p align="center"><img src="assets/planning-chain.en.svg" alt="Planning chain: shot rows → storyboard → white-mesh previs → action chain → cross-artifact gate" width="100%"></p>
 
 ## Highlights

@@ -3,7 +3,7 @@ name: ad-muse
 description: "AdMuse: produce product-faithful ecommerce videos from a product URL or image, optionally recreating supplied reference videos, through the default MiniMax H3 backend or an explicitly selected Omni Flash backend. Use one canonical product dossier, shot plan, optional storyboard/previs and model-specific final prompt, then submit, poll, download and QC each render."
 license: MIT
 metadata:
-  version: "0.3.2"
+  version: "0.4.0"
   category: creative
   summary: "AdMuse · 广告缪斯 — from product evidence and reference inspiration to locally validated MiniMax H3 or Omni Flash videos."
 ---
@@ -121,22 +121,25 @@ Let `N` be the number of reference videos and `M` the requested output count. Al
 
 Each variant stores `reference_id`, `repeat_index`, `source_analysis_hash` and `product_variant_id`. Repeated outputs reuse the same reference blueprint unless the user explicitly asks for a creative variation; they may change the product, market, speaker, language or approved offer while retaining the source's chosen structure and pacing.
 
-## Intelligent model reference routing
+## Risk-based model reference routing (v2)
 
-Before model formatting, produce one `reference_plan.json` per variant. It chooses the smallest reference set that can preserve the required identity and action. The router considers product-identity confidence, source-image coverage, number of product states, hand/contact complexity, directional effects, scene changes, camera complexity, reference storyboard quality and the selected backend's image limit.
+Read [reference-routing.md](references/reference-routing.md) before choosing references for EVERY variant, including runs without source videos. Apply the universal identity, interaction, state/time, space and evidence-coverage dimensions in the guide. Route from the actual shot actions and evidence coverage, not the product category, image count, budget preference or a batch-wide “simple” label. Verified original images remain the identity authority; they do not automatically establish hand anatomy, wearing fit or contact choreography. Generated identity images alone do not solve those gaps either.
 
-Use these modes:
+Create `reference_plan.json` with `routing_version: 2`, current shot/prompt hashes, per-shot risk assessments, required reference purposes, selected images and explicit coverage. First determine evidence required to preserve the action, then minimize redundant references within the backend limit. Missing risk information blocks request preparation rather than defaulting to product-only.
 
-| Mode | Include | Choose when |
+| Mode | Minimum evidence | Eligibility |
 |---|---|---|
-| `product_images_only` | Two to four verified product images, including a use-context image when available | Product identity is clear, the product stays in one simple state, the action is obvious, and no complex spatial or directional behavior must be copied; for Omni Flash, reduce this to the selected model's limit by plan revision, not slicing |
-| `identity_plus_product` | Identity reference set plus the minimum verified source images | The product has ambiguous geometry, multiple visible sides, state-sensitive parts or the generated identity image is needed to keep the SKU stable; for Omni Flash, the selected set must still fit the model limit (7 for `omni_flash-10s`, 3 for `omni-flash`) |
-| `storyboard_plus_product` | Accepted storyboard plus product images; identity set only if its gate requires it | The reference has several meaningful shots, fast but readable changes, or a product reveal/proof sequence that prompt text alone will not preserve |
-| `full_spatial_reference` | Storyboard, previs and the minimum product/identity references | Hand-object contact, installation, axis, light/air/spray direction, multi-location movement or complex camera geometry materially affects the recreation; for Omni Flash, reduce this to the most informative references within the model limit |
+| `product_images_only` | Verified identity | All shots are demonstrably low-risk; no wearing/body fit, critical finger contact, grip changes, occlusion or other triggers below; a static product or simple stable hold can qualify with evidence |
+| `identity_plus_product` | Verified source plus reviewed identity sheet | Low interaction risk, but identity/multiple sides require an identity sheet; does not replace action evidence |
+| `operation_plus_product` | Verified identity plus reviewed operation/fit keyframe(s) | Actor/object or object/object interaction, body fit, material/mechanism state change, interface action or prior interaction failure; existing references qualify only if they actually show the required state/action |
+| `storyboard_plus_product` | Verified identity plus storyboard; operation refs when triggered | Meaningful multi-shot continuity, reveal/proof sequence or hand-state changes across cuts |
+| `full_spatial_reference` | Verified identity plus storyboard and spatial previs; operation refs when triggered | Installation, transfer, multiple actors interacting, major occlusion, directional proof, multiple locations or complex camera geometry |
 
-The router must be conservative about adding references and conservative about omitting identity. If raw source images correctly show the SKU and the usage scene is simple, `product_images_only` is preferred. If a storyboard or previs is not needed, omit it. If a reference image is wrong, exclude it and keep the verified source image instead. Never exceed the selected backend's official image limit; record each selected image's role, path, hash and reason.
+Modes are not substitutes for coverage: a spatial board with tiny hands does not fulfill a close-up operation requirement. Preserve the current storyboard Hook and actual product facts. Generate and inspect storyboard first when needed; use it and verified product images for dependent operation frames and previs. Select references by purpose, not origin: a faithful source usage photo may suffice; otherwise prepare and QC an operation frame. Do not fabricate attachment methods or unseen controls to fill an evidence gap.
 
-The final backend-specific prompt must name every selected image role explicitly. It must also say which source-video decisions are being preserved and which content is replaced with the user's product. Do not write vague instructions such as “use all references.”
+Use `scripts/validate_reference_plan.py <variant_dir>` before every submission, including custom submission scripts. `prepare_request.py` invokes the same gate automatically. Old plans need explicit reassessment; never silently grandfather or overwrite historical submissions. This checks declared risks, coverage and hashes, not image anatomy or correctness of the assessor's judgment.
+
+If required references exceed the model limit, simplify the shot plan with preserved intent or split into authorized clips, then replan. Do not drop a required operation reference to fit the limit. User-directed reference restrictions remain binding: explain the uncovered action and adapt it within scope; do not claim a disallowed reference was supplied.
 
 ## Boundary of `product-ugc-pipeline`
 
@@ -198,7 +201,7 @@ run/
 
 Record product source, target market and spoken locale, backend/model, duration, ratio, resolution, number of variants, and whether the user wants a preview or paid generation. Reuse already settled choices. If the user has said to decide missing creative choices, select and record a coherent option instead of reopening the same question.
 
-For MiniMax H3 online generation, keep the effective duration between 4 and 15 seconds, 24 FPS, and the final English prompt at or below 7000 characters. For Omni Flash, use `omni_flash-10s` (exactly 10 seconds) or `omni-flash` (4, 6, 8 or 10 seconds), ratio 16:9 or 9:16, and the `omni-reference` request envelope. Record 720p as its resolution; neither Omni request sends a `resolution` parameter. Default only when the brief leaves it open: `minimax-h3`, 15 seconds, 9:16, H3 768P or Omni Flash 720p, and Mexican Spanish when the market is Mexico.
+For MiniMax H3 online generation, keep the effective duration between 4 and 15 seconds, 24 FPS, and the final English prompt at or below 7000 characters. For Omni Flash, use `omni_flash-10s` (exactly 10 seconds) or `omni-flash` (4, 6, 8 or 10 seconds), ratio 16:9 or 9:16, and the `omni-reference` request envelope. Record 720p as its resolution; neither Omni request sends a `resolution` parameter. Default only when the brief leaves it open: `minimax-h3`, 15 seconds, 9:16, H3 768P or Omni Flash 720p. Derive market and language from the current brief; do not inherit a previous campaign locale.
 
 ### 2. Run reference-video intake when present
 
@@ -282,7 +285,7 @@ Technical QC checks a real playable MP4, codec, duration, dimensions, frame rate
 - the exact SKU, silhouette, material, controls and orientation;
 - the product/hand/scene continuity and causal action order;
 - the correct origin, direction and receiving surface of light or other directional effects;
-- no duplicate product, impossible attachment, teleport, extra hand, unsupported feature, invented label or wrong locale;
+- no duplicate product, impossible attachment, teleport, extra hand/finger, fused digits, changing hand ownership, unsupported feature, invented label or wrong locale;
 - spoken language, timing, intelligibility and whether the product is actually shown doing the claimed action.
 
 Use `pass`, `fail`, `needs_review` or `error` with evidence. Technical success never implies creative acceptance. If a clip fails, preserve it and report the failed check; rerender only with explicit authorization or when the user already authorized a correction batch.
