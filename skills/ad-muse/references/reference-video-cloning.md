@@ -60,4 +60,4 @@ The transcript should preserve segments and words with source timestamps, detect
 }
 ```
 
-The router must be deterministic from the evidence and must fit the selected backend reference limit. A downstream prompt can use fewer images than the plan when a provider rejects a role, but it must record the change and rerun the role/limit check.
+The example above shows the base fields only; new submissions must also include the v2 assessments, hashes, purposes and coverage required by [reference-routing.md](reference-routing.md). Apply that router even without source videos. If the provider rejects a required role or exceeds a limit, revise the shot/reference plan and revalidate; never silently remove required evidence.
