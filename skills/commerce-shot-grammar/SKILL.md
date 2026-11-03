@@ -1,6 +1,6 @@
 ---
 name: commerce-shot-grammar
-description: "Adapt Yingce's 分镜语法 method for ecommerce scenes: establish spatial previs, then derive a linked storyboard while preserving product, hand, prop, scene, axis, and camera continuity."
+description: "Adapt Yingce's 分镜语法 method for ecommerce scenes: create a storyboard, then a linked spatial previs while preserving product, hand, prop, scene, axis, and camera continuity."
 ---
 
 # Commerce Shot Grammar
@@ -26,14 +26,13 @@ Keep the server shot grammar as the camera, staging and continuity foundation, t
 
 Do not design a shot that changes product geometry, invents an accessory, relocates the environment or changes the hand holding the product without a visible transfer.
 
-## Planning order
+## Planning order — local v2.0
 
-The structured shot rows come first. Then:
+Structured shot rows come first, including spatial blocking and camera intent. Generate the black-and-white chronological storyboard from those rows and product references; inspect it; then generate the white-model spatial map using that storyboard, the same rows and product references.
 
-1. Establish the `shot-previs` spatial plan: scene geometry, actor and product placement, axis, camera side, camera stations, movement paths, contact relationships, target ratio and safe frames.
-2. Derive the `shot-storyboard` from the accepted previs: chronological framing, shot size, viewpoint, camera movement, action start/end state and proof purpose. The storyboard inherits the previs rather than choosing a new geography.
+The companion `commerce-production-workflow` owns this local image sequence and its [layout/QC guide](../commerce-production-workflow/references/layout-and-qc.md). Historical source cards describe a spatial-blueprint-first method; retain that spatial reasoning in the rows, but do not use it to reverse the user-requested image generation order. This is an explicit local adaptation.
 
-This previs-before-storyboard relationship comes from `shot-previs`, which states that storyboard places the shot sequence on the spatial blueprint. Do not reverse the dependency in a prompt. The production workflow may use a different artifact name such as “white-mesh previs”, but the spatial plan still precedes the chronological board when both are required.
+Preserve the approved storyboard's opening Hook, including environment, action, viewpoint and motion where present. Never add a warehouse, store, pickup action or other campaign-specific trope unless the current storyboard calls for it. The map must explain the storyboard's staging. If it reveals a conflict, revise shared rows and dependent images together.
 
 ## Card routing
 
@@ -46,7 +45,7 @@ Use the bundled source cards internally:
 - `shot-movement`, `shot-shotflow` and `shot-transitions` for movement and continuity;
 - `shot-depth-focus` and the `gfl-*` cards when optical, movement or screen-direction logic matters.
 
-The user does not need to name cards. Choose them from the scene problem and preserve their dependencies.
+The user does not need to name cards. Choose them from the scene problem; apply the local image sequence above when historical dependencies differ.
 
 ## Previs image gate
 
@@ -56,10 +55,10 @@ When the route requires a previs image, check:
 - no several full copies of one moving actor occupying the same continuous set;
 - one solid acting figure per actor plus numbered ghosts only when needed for motion;
 - readable camera stations, frusta, axis, paths, action/contact marks and safe frames;
-- no miniature storyboard frames pasted in as the spatial map;
+- spatial map remains dominant; compact bottom shot/camera cards are allowed, with optional targeted framing previews; do not replace the map with a complete redrawn storyboard;
 - the same product, creator, environment, lighting, camera side and state as the shot rows.
 
-The storyboard then uses the accepted previs and verified product references. A previous storyboard cannot become the spatial source after the fact.
+The previs uses the inspected storyboard and verified product references. Label conceptual frusta and axes as schematic; do not claim measured optics or dimensions from a generated image. Preserve real per-panel aspect ratios in framing previews, not only a ratio label.
 
 ## Required output fields
 
@@ -80,4 +79,4 @@ Prompt construction and media submission are delegated to the relevant prompt/pr
 
 Fail the handoff when the two artifacts disagree on product identity, creator/hand, environment, lighting, axis, camera side, action order, mechanism state, target ratio or proof visibility. Revise the dependent artifact from the accepted upstream artifact; do not reconcile a contradiction by inventing a third state.
 
-If image generation is authorized, submit the previs image first, wait for and inspect the result, then submit the storyboard with the accepted previs and product identity references. Report the real status of each task.
+If image generation is authorized, submit the storyboard image first, wait for and inspect the result, then submit the previs with that storyboard and product identity references. Report the real status of each task.

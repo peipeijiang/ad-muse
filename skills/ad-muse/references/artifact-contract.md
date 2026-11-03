@@ -14,7 +14,7 @@ The run has one owner and one canonical file for each kind of decision.
 | `product_brief.json` | `product-ugc-pipeline` | Verified product facts, mechanics and unknowns | shot planning, prompts, QC |
 | `product_reference_set/` | `product-ugc-pipeline` | Canonical identity images plus hashes and roles | storyboard, selected backend, QC |
 | `shot_rows.json` | `commerce-production-workflow` populated by `commerce-shot-grammar` | One timeline, blocking, camera and product state plan | storyboard, previs, prompt draft |
-| `storyboard.png` | `commerce-production-workflow` | Chronological visual plan | prompt draft, selected backend references, QC |
+| `storyboard.png` | `commerce-production-workflow` | Chronological visual plan | spatial previs, prompt draft, selected backend references, QC |
 | `previs.png` | `commerce-production-workflow` | Spatial/action geometry plan | prompt draft, QC |
 | `action_prompt_draft.md` | `writing-video-prompts` | Model-neutral motion, physics and sound draft | selected backend adapter |
 | `model_prompt.md` | selected backend adapter (`minimax-h3-creative-director` for H3 or this skill’s Omni formatter) | The one final prompt/envelope for the selected backend, with source structure and replacement ledger | submission |
@@ -48,3 +48,7 @@ intake_pending
 If an upstream artifact changes, invalidate its downstream artifacts by revision/hash. Do not silently reuse a stale storyboard, prompt or submission manifest.
 
 Identity images, storyboard and previs are conditional. When omitted by the reference plan, record `not_required` and the reason, without creating placeholder artifacts. Only required images participate in the reference QC gate. Existing `h3_prompt.md` files from older runs may remain canonical through an explicit manifest path; never create a duplicate merely to rename them.
+
+## Storyboard-first spatial route
+
+When spatial previs is required, generate and inspect the storyboard first using shared shot rows and product references. Then generate the previs using the inspected storyboard, same shot-row revision and product references. Record these dependencies and invalidate affected downstream QC after revisions. The spatial board explains the storyboard's actual locations, blocking and cameras; it does not introduce a fixed Hook template or a previous product's dimensions. Separate `visual_concept_check`, `measured_geometry_check` and `user_acceptance`; unmeasured properties remain `not_verified`.
