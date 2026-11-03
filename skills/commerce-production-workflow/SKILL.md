@@ -1,6 +1,6 @@
 ---
 name: commerce-production-workflow
-description: "Adapt Yingce's short-drama production workflow for ecommerce: enforce source, asset and stage gates, create a spatial previs and a linked black-and-white storyboard, then hand off to prompt and video skills."
+description: "Adapt Yingce's short-drama production workflow for ecommerce: enforce source, asset and stage gates, create a black-and-white storyboard followed by a linked spatial previs, then hand off to prompt and video skills."
 ---
 
 # Commerce Production Workflow
@@ -16,26 +16,25 @@ The two source roles are distinct:
 
 This skill owns the production order and artifact gates. Prompt-writing and media submission remain delegated to the selected prompt and production skills.
 
-When an approved video-prompt skill supplies the canonical direction, use it as the creative source for the planning artifacts. Generate the spatial previs after the structured shot rows, then derive the black-and-white storyboard from the accepted spatial plan. Do not rewrite the source video direction or create a competing prompt.
+## Local workflow v2.0 — storyboard first
 
-## Ecommerce production order
-
-Use this order:
+When an approved video-prompt skill supplies the direction, retain its Hook, setting, action and shot order. Adapt product facts only from verified references. The opening Hook must follow the approved storyboard and creative brief, whatever its form: action, problem, result, demonstration, reaction or another established opening. Do not impose a location, pickup action, crowd or camera move from a previous campaign. The spatial map explains the scenes actually present in the storyboard; text/audio-only Hooks stay in the shot data and are not converted into invented physical action.
 
 ```text
 product evidence and continuity lock
-→ structured product shot rows
-→ spatial / white-mesh previs board(s)
-→ black-and-white multi-panel storyboard board(s)
-→ prompt handoff
-→ video generation handoff
+→ shared structured shot rows (Master Shot Data)
+→ black-and-white chronological storyboard
+→ inspect storyboard
+→ white-model spatial previs referencing that storyboard AND product identity images
+→ cross-artifact QC and revisions
+→ prompt handoff → authorized video generation
 ```
 
-Both boards derive from the same complete shot rows. The previs is the spatial source of truth for scene geometry, camera side, axis and contact; the storyboard inherits that accepted layout while adding chronological compositions. Neither artifact may become an independent illustration.
+Plan spatial relationships in the shot rows before either image, but generate the storyboard image first. The storyboard defines visible composition and beat order; the white-model map explains the corresponding space, camera stations and movement. Both use the same shot IDs and revision. If the spatial review exposes an impossible shot, update the rows and affected storyboard panels, then update the previs; do not silently invent a new action.
 
-**Previs is a spatial planning artifact, not a second storyboard render.** The `shot-previs` card in `分镜语法` establishes the spatial blueprint before `shot-storyboard` places the shot sequence on that geometry. The storyboard answers “what is seen, and in what order”; the previs answers “where the subject, product and cameras are in the scene, and how do they move?”
+This image order and the two-board route are local ecommerce adaptations requested by the user, not verbatim Yingce source rules. Historical source cards remain unchanged. For this route, this local order takes precedence over their previs-first image dependency.
 
-The source `影策短剧制作工作流` requires a structured production storyboard and a black-and-white multi-panel board; its white-model preview is an optional tool used when the user requests spatial blocking or motion preview. Making a white/mesh previs a mandatory ecommerce planning artifact, and placing it before the board, is an adaptation in this skill. Record that adaptation explicitly instead of presenting it as verbatim source behaviour.
+Read [layout-and-qc.md](references/layout-and-qc.md) when preparing either board. Prefer the lightweight two-image route; do not introduce a 3D production pipeline unless actual geometric validation is needed or requested.
 
 ## Product-specific locks
 
@@ -52,17 +51,17 @@ Unknown product facts remain unknown. Do not invent accessories, dimensions, cla
 
 ## Planning artifact stages
 
-1. Complete the structured shot rows before requesting either image. Every row must include timing; shot size; viewpoint and camera height/angle; camera position relative to the subject and axis; camera movement path and direction; subject and product positions in the scene and frame; stable spatial/environment anchors; product orientation/state; visible action and hand path/contact; proof purpose; continuity start/end state; and the intended safe-frame bounds. Do not proceed while a required camera or blocking field is missing or vague.
-2. Build the spatial / white-mesh previs from those rows. Use a coherent single scene layout, or clearly separated stage panels. Do not place several full copies of a moving actor in one continuous scene. Draw one canonical position per actor per stage and a labelled motion path; if ghost positions are useful, identify them as numbered stages and keep one solid acting figure. Include the product, surface/environment anchors, camera stations, viewing directions/frusta, contact path, scene axis/180-degree line, and each camera's safe frame. Use readable symbols and a legend. Do not paste miniature storyboard frames into the spatial map.
-3. Generate the black-and-white multi-panel storyboard from the accepted previs. It is the chronological visual reference and does not replace the rows or previs. Its panels communicate the selected shot compositions and beat order while inheriting the accepted scene side, axis, product state and spatial relationships.
-4. Before handoff, compare every row against both artifacts: positions, camera stations/frusta, paths, axis and safe frames against the previs; framing and beat order against the storyboard. Missing fields, contradictory duplicate staging, unreadable marks, miniature board frames used as the spatial map, or an incomplete image are failures. Revise the dependent artifact; do not waive the gate with a `pass` label.
-5. Run cross-artifact QC. If product, hand, creator, scene, camera side, state transition or target ratio drifts, revise the dependent artifact from the accepted upstream artifact. Record the check against each row and each exact image revision.
-6. Hand off both artifacts to the prompt skill. Do not write prompts here and do not claim media generation.
+1. Complete shared shot rows: stable shot ID, scene ID, timing, Hook/proof purpose, shot size, viewpoint and height, camera station/side, view direction, movement, subject/product start and end positions, environment anchors, product orientation, hand/contact/release, transition and target frame ratio. Mark unknown facts; do not fabricate precision.
+2. Generate a black-and-white storyboard from the approved direction, rows and verified product references. Each panel carries its shot ID and shows the actual composition, action and Hook environment. For vertical video, each image panel must have a real 9:16 image area, regardless of sheet ratio. Inspect product, sequence and hand states before proceeding.
+3. Generate a grayscale white/clay-model spatial board using the inspected storyboard, the SAME rows and product identity images as references. Use the dominant spatial map, right product/legend strip and compact bottom camera-card strip described in the layout guide. Do not independently regenerate the narrative.
+4. Compare every shot ID across rows and both boards. Check Hook setting/action, product identity/scale, hand state, placement/release, scene anchors, camera side, movement and target framing. Fix incorrect or unreadable labels using deterministic overlay when feasible, rather than regenerating the whole image. Revise affected artifacts when staging is wrong.
+5. Record exact revisions, reference dependencies and QC evidence. Distinguish conceptual visual checks, measured geometry checks (if any), and user acceptance. A generated image with camera arrows is not proof of measured field of view, collision clearance or dimensions. Never promote unchecked items to pass.
+6. Hand off both images and verified product references to the selected prompt skill after required checks. Preserve pending user-review gates when the user requested final approval. Prompt writing and video submission remain owned by their respective skills.
 
 ## Required output
 
-Return `sourceVideoPrompt`, `commerceContinuityLock`, `shotRows`, `whiteMeshPrevisArtifacts`, `blackWhiteStoryboardArtifacts`, `crossArtifactQC`, and `promptHandoff`. Every artifact records its source prompt version, shot-row revision, references, target ratio, source snapshot or deployment version when known, and status.
+Return `sourceVideoPrompt`, `commerceContinuityLock`, `shotRows`, `blackWhiteStoryboardArtifacts`, `whiteMeshPrevisArtifacts`, `crossArtifactQC`, and `promptHandoff`. Each artifact records source prompt version, shot-row revision, input reference paths/task IDs, sheet ratio, shot frame ratio, source snapshot/version when known and actual status.
 
-Stop before prompt handoff when required product evidence is missing, the previs or storyboard is unavailable, the action board disagrees with the accepted spatial plan, or a claim cannot be shown by an observable product action.
+Stop handoff on missing required product evidence, unavailable images, contradictory actions or identity, or unsupported claims. For unmeasured geometric properties, explicitly report `not_verified`; require measured validation only when the task calls for it. Do not confuse a conceptual-board pass with a measured or user-approved pass.
 
-If the user explicitly authorizes image generation and the image-generation tool is available, continue into the sequential previs and storyboard tasks. Persist both task/result statuses; do not report an image as complete from a queued state.
+When image generation is authorized, generate and inspect the storyboard first, then submit the previs with the storyboard and product references. Persist task IDs before polling, reuse known tasks on uncertain responses, and distinguish queued, completed, downloaded and reviewed. Paid video generation requires its own authorized scope.

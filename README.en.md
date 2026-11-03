@@ -14,6 +14,8 @@
 
 AdMuse is an Agent Skill orchestration workflow; it does not render pixels itself. Before any paid generation, it breaks a video into four checkable planning artifacts: **shot plan, storyboard, white-mesh previs and action chain**. The final prompt is written only after they agree. It calls MiniMax H3 by default and Omni Flash (up to 10 seconds per clip) when you select it explicitly.
 
+When spatial previs is needed, generate and inspect the black-and-white storyboard first, then use it with shared shot data and product references to create grayscale white-model previs. Keep the spatial map dominant, with a product sidebar and compact camera cards; add targeted framing previews only when useful. Hooks, locations and actions follow the current storyboard, and scale follows the current product dossier. No warehouse, pickup action or palm-sized product is assumed. Record conceptual QC, measured geometry verification and user acceptance separately.
+
 <p align="center"><img src="assets/planning-chain.en.svg" alt="Planning chain: shot rows → storyboard → white-mesh previs → action chain → cross-artifact gate" width="100%"></p>
 
 ## Highlights

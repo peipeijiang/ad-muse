@@ -3,7 +3,7 @@ name: ad-muse
 description: "AdMuse: produce product-faithful ecommerce videos from a product URL or image, optionally recreating supplied reference videos, through the default MiniMax H3 backend or an explicitly selected Omni Flash backend. Use one canonical product dossier, shot plan, optional storyboard/previs and model-specific final prompt, then submit, poll, download and QC each render."
 license: MIT
 metadata:
-  version: "0.3.1"
+  version: "0.3.2"
   category: creative
   summary: "AdMuse · 广告缪斯 — from product evidence and reference inspiration to locally validated MiniMax H3 or Omni Flash videos."
 ---
@@ -221,11 +221,11 @@ Do not infer a feature from a marketing phrase when the image or source does not
 Use `commerce-production-workflow` as the outer production order and `commerce-shot-grammar` as its internal shot-planning method. The single plan must contain:
 
 - one `shot_rows.json` with contiguous timings that sum to the target duration;
-- one spatial/white-mesh previs artifact only when contact/direction/geometry risk requires it, derived from the structured shot rows;
-- one chronological storyboard artifact only if `reference_plan.json` requires it, derived from the accepted spatial previs;
+- one chronological black-and-white storyboard when the reference plan or user requires it, derived from the shared shot rows and verified product references;
+- one grayscale spatial/white-model previs when the reference plan or user requires it, generated after inspecting the storyboard and using that storyboard, the same rows and product references;
 - one cross-artifact QC result.
 
-Create the reference plan before generating extra images, and refine it after QC without duplicating it. Omitted identity/storyboard/previs outputs are recorded as `not_required` with a reason; they need no placeholder file and are not failed gates. This orchestrator’s optional-artifact contract takes precedence over mandatory image-generation steps in the component skills. The shot rows are the source of truth for any generated planning images. `commerce-shot-grammar` supplies axis, blocking, camera, contact and state decisions; it must not create an independent competing shot table. Establish the previs from those rows first; derive the storyboard from the accepted previs. The previs is for space and contact; the storyboard is for chronological visual beats. Keep their roles separate.
+Create the reference plan before generating extra images, and refine it after QC without duplicating it. Omitted identity/storyboard/previs outputs are recorded as `not_required` with a reason; they need no placeholder file and are not failed gates. This orchestrator’s optional-artifact contract takes precedence over mandatory image-generation steps in the component skills. The shot rows are the source of truth for any generated planning images. `commerce-shot-grammar` supplies axis, blocking, camera, contact and state decisions; it must not create an independent competing shot table. For routes requiring spatial previs, include the storyboard as its upstream planning input. Generate and inspect the storyboard first, then generate the previs from it plus the shared rows and verified product references. The previs explains space, contact and cameras; the storyboard establishes chronological visual beats. Follow the component workflow’s layout guide: dominant grayscale spatial map, product/legend sidebar and compact camera cards, with targeted framing previews only when useful. Preserve the current storyboard’s Hook and locations without imposing any campaign-specific opening, environment or action. Read dimensions and scale cues from the current product dossier. Record conceptual visual QC, measured geometry checks and user acceptance separately; an image with arrows does not prove real dimensions or lens geometry.
 
 For each beat, record: start/end time, shot size, camera position and movement, product orientation, hand ownership and contact point, product state before/after, environment anchors, lighting direction, proof purpose, and spoken line. A product action must show a causal chain such as `hand contacts button → button is pressed → the light emits from its lamp face → the illuminated area lies in front of the lamp axis`.
 
