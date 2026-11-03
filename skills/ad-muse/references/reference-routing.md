@@ -1,66 +1,50 @@
-# Reference routing v2 — action and evidence first
+# Reference routing — complementary product images and appropriate planning
 
-## Universal scope
+## Scope and artifact families
 
-This is a commerce-production router for any product category and creative setting. It does not prescribe warehouses, homes, stores, presenters, body types, hand-held products or a market/language. Read those choices from the current brief and approved creative direction. Route per shot by evidence gaps in five dimensions:
+Apply to any product category or setting. Read the current brief, product dossier, shot rows and final prompt. Evaluate identity, interaction, state/time, space and reference coverage. Do not prescribe a location, presenter, market or Hook.
 
-1. Identity: geometry/appearance, variant, contents, interface or other defining attributes.
-2. Interaction: actor/object, object/object, body fit, tool/surface, material or interface contact.
-3. State and time: start state, action, observable result, transition and continuity.
-4. Space: relative positions, scale, occlusion, attachment, movement and camera visibility.
-5. Coverage: which verified existing references show each required fact, and what is missing.
+Use only the existing artifact families:
 
-Risk flags are features, not a list of permitted scenes. Assess previously unseen actions through these dimensions. If a material risk cannot be represented, record it and extend the assessment before submission rather than declaring every flag false. Do not turn these examples into mandatory shot templates.
+1. Product reference set: same-SKU source photos, different views, details, scale and product-in-use context; optionally a source-verified identity sheet.
+2. Black-and-white storyboard: composition, actions, state transitions and chronological continuity.
+3. White-model previs: layout, relative positions, contact, occlusion, axis and camera geometry, referencing the inspected storyboard.
 
-## Assessment
+A product-in-use photo is a product reference, not a new generated artifact type. Do not generate a separate “operation image,” operation sheet or operation route.
 
-Assess each shot after reading the actual shot rows and final prompt. Assign stable shot IDs. Required boolean risk fields (unknown is not false):
+## Product-image selection
+
+Review the available product inventory before selecting. Prefer complementary images that together explain silhouette, relevant front/back/side views, controls/material details, proportion and real usage/fit where applicable. Include an accurate usage-context photo when it resolves how the product relates to a body, surface, environment or other object. This is not restricted to wearables or hand-held goods.
+
+Do not automatically choose only the hero image, nor require a fixed minimum image count. Record what each image contributes. Multiple images are preferred when they close distinct gaps; a single image is acceptable when sufficient. Verify exact SKU, orientation and state; exclude conflicting variants and reject anatomical distortions or inaccurate products in usage images. Original photos are not automatically correct. Generated identity sheets must be checked against source evidence.
+
+Record `product_reference_review` with nonempty observations for `appearance`, `angles_details`, `usage_context`, and `selection_reason`. Say when a category is not applicable and why; when evidence is missing, record the gap rather than calling it covered. Do not create missing product facts via generation.
+
+## Choose the planning depth
+
+- Simple static views or stable use can use product references alone if appearance and relevant usage are adequately covered.
+- Identity ambiguity may need an identity sheet, within the product-reference family.
+- Contact actions, two-hand coordination, grip changes, state changes, causal sequences and important continuity require a storyboard. Describe before/during/after states there; do not add another image stage.
+- Important occlusion, installation, transfer, actor interaction, directional effects or complex spatial/camera geometry require storyboard plus previs. Separate unrelated scenes do not alone trigger previs. Assess the spatial dependency itself.
+- Stable wearing or stable surface contact requires usage-context coverage in the product set, not automatically a storyboard/previs. This photo must show the relevant fit/relationship, not merely carry a “use context” label.
+- A prior anatomy failure triggers storyboard reassessment and contact/ownership checks; add previs if the underlying spatial factors require it. Do not just repeat a failed prompt with “no extra fingers.”
+
+For risky hand interactions, record actor/hand ownership, start/end state, target, occlusion and release in shot rows and storyboard; explain spatial contact in previs when needed. Do not demand five visible fingers when natural occlusion hides some. Preserve the actual product function and creative direction.
+
+## Machine-readable contract
+
+`routing_version: 2`, backend and the existing four modes remain. `operation_plus_product` and the `operation` image purpose are removed and must be reassessed, not silently renamed.
+
+Record `shot_rows_sha256`, `prompt_sha256`, `product_reference_review`, and one `shot_assessments` entry per unique `shot_id`. Each entry needs `evidence` and explicit boolean `risks`:
 
 `wearing_fit`, `finger_contact`, `two_hand_interaction`, `grip_change`, `occlusion`, `installation`, `transfer`, `multi_actor_interaction`, `directional_effect`, `complex_camera`, `identity_ambiguity`, `prior_anatomy_failure`, `temporal_continuity`, `mechanism_state`, `material_change`, `surface_contact`, `contents_transfer`, `interface_action`.
 
-Include an `evidence` explanation per shot. Stable wearing still needs body-fit evidence even without fastening or removal. A finger tapping a phone next to a worn product is finger contact; two hands with distinct roles require ownership planning. Single-hand steady holding is not automatically high risk. Scene count and temporal continuity are evaluated separately. A written “no extra fingers” instruction is not pose evidence.
+Risk flags describe actual shot requirements, not keywords in the product title. Unknown is not false. If a new material risk is not represented, record it and extend assessment instead of forcing a low-risk classification.
 
-## Routing decisions, not one workflow for every product
+Each selected reference has an absolute `path`, matching `sha256`, `qc: pass`, readable `role`, `visual_qc` observations, `covers_shots`, and `purposes` chosen from `identity`, `identity_sheet`, `usage_context`, `storyboard`, `previs`. `usage_context` is a coverage tag on a product reference, not a separate artifact or mode. One image may serve more than one purpose only if visually verified. Product images collectively cover required identity and use; planning images cover action/space.
 
-Use three independent questions: is product identity adequately shown; is the intended action/contact adequately shown; is temporal/spatial continuity adequately constrained? Evaluate the actual shot, not a label such as “wearable” or “simple.”
+The validator checks declared coverage and stale inputs; request preparation additionally checks backend limits. Neither can inspect actual anatomy. Use original product evidence to correct wrong reference imagery, update affected rows/boards and rerun QC. No image count or board can guarantee a correct render.
 
-Examples: static packshots can use source images only; a stable worn product needs fit coverage but may use an existing faithful wearing photo without generating a board; a finger press followed by a visible result needs operation coverage and a storyboard for the causal sequence; fastening behind an occluding wrist or handing a product to another person also needs spatial previs. A sequence of independent beauty shots does not need a board solely because it has cuts. For a simple scene the previs can be one clear map, not a six-scene template.
+## QC
 
-The router decides the minimum sufficient artifacts and records WHY each is needed or omitted. It never forces both boards for every product and never defaults to originals just because SKU appearance is clear. Planning type and image origin are separate: a verified source operation photo can fill a gap; an unrelated generated image cannot.
-
-## Coverage
-
-- Always require `identity` evidence. Source references remain authoritative for SKU and mechanism.
-- Body fit, contact/handling, attachment/transfer, mechanism operation, material change, surface interaction, contents movement, interface action or prior anatomy failure require `operation` evidence covering affected shot IDs. This may be a body pose, object contact, state diagram, material/result reference or interface keyframe as appropriate; it does not require a human hand.
-- `temporal_continuity` requires a `storyboard` covering the sequence: causal actions, reveal/proof order, changed hand/object states or important continuity across cuts. Several independent static packshots alone do not trigger it. A single shot containing several consequential action beats can trigger it.
-- Occlusion, installation, transfer, interacting actors, directional effects, complex cameras or more than one scene require `previs` plus storyboard.
-- Identity ambiguity requires an `identity_sheet`, verified against source images. This cannot replace operation evidence.
-
-Operation evidence means legible verified source or reviewed generated imagery of the required interaction/state/result, not a product packshot, vague use-context label or a tiny hand inside a map. Use start/contact/end frames when one image cannot explain the transition. Inspect anatomy, left/right ownership, finger-target contact, occlusion, scale, fit and product identity. Do not force five visible fingers when some should be occluded; check plausible anatomy and continuity for the intended person. A generated operation frame that fails QC must not enter the reference set.
-
-If the prompt adds actions absent from the shot rows, revise rows and reroute. Keep a hand ledger for risky shots: actor ID, left/right hand, task, start/end position, contact target, visible/occluded digits and release/exit. Specify what the inactive hand does. Preserve each person's anatomy across cuts. No new hand may appear merely to support a product.
-
-## Plan contract
-
-Use the existing backend, mode and selected_images fields, plus:
-
-```json
-{
-  "routing_version": 2,
-  "shot_rows_sha256": "actual file hash",
-  "prompt_sha256": "actual model_prompt.md hash",
-  "shot_assessments": [
-    {"shot_id": "s01", "evidence": "Explain actual actions and reference gaps", "risks": {"wearing_fit": true, "finger_contact": false, "two_hand_interaction": false, "grip_change": false, "occlusion": false, "installation": false, "transfer": false, "multi_actor_interaction": false, "directional_effect": false, "complex_camera": false, "identity_ambiguity": false, "prior_anatomy_failure": false, "temporal_continuity": false, "mechanism_state": false, "material_change": false, "surface_contact": false, "contents_transfer": false, "interface_action": false}}
-  ]
-}
-```
-
-Each selected image retains absolute `path`, `sha256`, `qc: pass`, readable `role`; add `purposes` (one or more of identity, identity_sheet, operation, storyboard, previs), `covers_shots` (shot IDs), and a nonempty `visual_qc` observation. Purpose labels are assertions checked by visual review, not automated image recognition. One image may serve several purposes only when each is legible and reviewed. Record generated planning artifacts separately from the selected submission references if needed; no role may disappear silently at model formatting.
-
-## Validation and recovery
-
-`validate_reference_plan.py` fails missing assessments, stale hashes, unrecognized modes, underspecified risk flags, mismatched shot coverage, required purposes absent, or low-tier routing for high-risk actions. It validates declared data only; a human/agent must inspect images and verify the declared risks against the actual prompt. `prepare_request.py` separately enforces model limits and transport contracts.
-
-After a hand/finger failure, flag affected shots `prior_anatomy_failure: true`, revise hand ledger and operation references before any authorized retry. Do not retry the same product-only plan with just a negative prompt. Do not silently simplify away the product's promised function.
-
-For video QC, inspect contact start, peak occlusion, release and both sides of each cut; use short contiguous frame sequences around suspicious moments rather than only sparse contact sheets. Record shot ID, timestamp and failure evidence. Technical decoding and audio presence do not establish anatomical correctness. A pending or failed anatomy check cannot become a creative pass. References reduce ambiguity; they do not guarantee correct generation.
+Inspect selected product views against SKU and source evidence. Check storyboard actions and hand/object ownership; check previs spatial relations. For final video, inspect contact, occlusion, release and cuts using contiguous frames around suspicious events. Record timestamps and failures; technical decoding is not creative acceptance. Preserve human review gates when requested.

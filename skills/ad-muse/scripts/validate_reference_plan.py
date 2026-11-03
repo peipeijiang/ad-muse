@@ -10,12 +10,14 @@ RISKS = ('wearing_fit', 'finger_contact', 'two_hand_interaction', 'grip_change',
          'directional_effect', 'complex_camera', 'identity_ambiguity', 'prior_anatomy_failure',
          'temporal_continuity', 'mechanism_state', 'material_change', 'surface_contact',
          'contents_transfer', 'interface_action')
-OPERATION = set(RISKS[:8]) | {'prior_anatomy_failure', 'mechanism_state',
-                                  'material_change', 'surface_contact', 'contents_transfer', 'interface_action'}
+ACTION_SEQUENCE = {'finger_contact', 'two_hand_interaction', 'grip_change',
+                   'installation', 'transfer', 'multi_actor_interaction', 'prior_anatomy_failure',
+                   'mechanism_state', 'material_change', 'contents_transfer', 'interface_action',
+                   'temporal_continuity'}
 SPATIAL = {'occlusion', 'installation', 'transfer', 'multi_actor_interaction',
            'directional_effect', 'complex_camera'}
-PURPOSES = {'identity', 'identity_sheet', 'operation', 'storyboard', 'previs'}
-MODES = {'product_images_only', 'identity_plus_product', 'operation_plus_product',
+PURPOSES = {'identity', 'identity_sheet', 'usage_context', 'storyboard', 'previs'}
+MODES = {'product_images_only', 'identity_plus_product',
          'storyboard_plus_product', 'full_spatial_reference'}
 
 
@@ -49,8 +51,6 @@ def validate(root):
         raise ValueError('One risk assessment per shot required')
     seen, needed = set(), {p: set() for p in PURPOSES}
     needed['identity'].update(ids)
-    if len(set(scenes)) > 1:
-        needed['previs'].update(ids)
     for a in assessments:
         sid = a.get('shot_id')
         if sid not in ids or sid in seen or not nonempty(a.get('evidence')):
@@ -60,10 +60,10 @@ def validate(root):
         if set(risks) != set(RISKS) or any(type(v) is not bool for v in risks.values()):
             raise ValueError('All risk flags must be explicit booleans; unknown is not low risk')
         active = {k for k, v in risks.items() if v}
-        if risks['temporal_continuity']:
+        if active & ACTION_SEQUENCE:
             needed['storyboard'].update(ids)
-        if active & OPERATION:
-            needed['operation'].add(sid)
+        if risks['wearing_fit'] or risks['surface_contact']:
+            needed['usage_context'].add(sid)
         if active & SPATIAL:
             needed['previs'].add(sid)
         if risks['identity_ambiguity']:
@@ -75,17 +75,19 @@ def validate(root):
         raise ValueError('Unknown routing mode')
     minimum = ('full_spatial_reference' if needed['previs'] else
                'storyboard_plus_product' if needed['storyboard'] else
-               'operation_plus_product' if needed['operation'] else
                'identity_plus_product' if needed['identity_sheet'] else 'product_images_only')
     rank = {m: i for i, m in enumerate(('product_images_only', 'identity_plus_product',
-                                      'operation_plus_product', 'storyboard_plus_product', 'full_spatial_reference'))}
+                                      'storyboard_plus_product', 'full_spatial_reference'))}
     if rank[mode] < rank[minimum]:
         raise ValueError('Under-routed actions: minimum mode is ' + minimum)
     # Even an optional higher-tier route must actually contain its advertised evidence.
-    for purpose in {'identity_plus_product': ['identity_sheet'], 'operation_plus_product': ['operation'],
+    for purpose in {'identity_plus_product': ['identity_sheet'],
                     'storyboard_plus_product': ['storyboard'], 'full_spatial_reference': ['storyboard', 'previs']}.get(mode, []):
         if not needed[purpose]:
             needed[purpose].update(ids)
+    product_coverage = plan.get('product_reference_review')
+    if not isinstance(product_coverage, dict) or any(not nonempty(product_coverage.get(k)) for k in ('appearance', 'angles_details', 'usage_context', 'selection_reason')):
+        raise ValueError('Product reference review must explain appearance, angles/details, usage-context coverage and selection')
     covered = {p: set() for p in PURPOSES}
     refs = plan.get('selected_images')
     if not isinstance(refs, list) or not refs:

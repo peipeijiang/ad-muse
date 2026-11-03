@@ -50,7 +50,7 @@ For `omni_flash-10s`, never send `duration`, `resolution`, `enable_upsample` or 
 
 **Zero images is a provider capability, not an AdMuse option.** The provider accepts `omni_flash-10s` without references (text-to-video). AdMuse is a product-fidelity workflow, so the serializer requires at least one hash/QC-verified product or identity reference. Do not describe this policy as an API limit.
 
-**Channel-level image caps.** The 7-image maximum for `omni_flash-10s` is the model limit; some upstream channels accept fewer images (some only 1). An over-limit task can fail and is automatically refunded. For product fidelity, send the minimum references that carry the required identity and direction evidence (commonly 1), up to 7. If a task fails and is refunded for reference count, revise `reference_plan.json` to fewer images with a recorded reason, rebuild the request and retry. Never slice a reviewed reference set silently, in the serializer or at submit time.
+**Channel-level image caps.** The 7-image maximum for `omni_flash-10s` is the model limit; some upstream channels accept fewer images (some only 1). An over-limit task can fail and is automatically refunded. For product fidelity, select complementary product appearance, detail and usage-context references plus required planning boards, up to 7; do not assume one hero image is sufficient. If a task fails and is refunded for reference count, revise `reference_plan.json` to fewer images with a recorded reason, rebuild the request and retry. Never slice a reviewed reference set silently, in the serializer or at submit time.
 
 ### Reference transport and provenance
 

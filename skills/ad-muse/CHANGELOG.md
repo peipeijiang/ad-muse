@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.1 — 2026-11-03
+
+- Remove the mistaken independent operation-image route and purpose.
+- Select complementary product views, details and usage-context photos within the existing product reference set.
+- Route action sequences to storyboard and spatial relationships to previs; stable use may need only adequate product references.
+- Require selection coverage explanations without a fixed image count.
+
+
 ## 0.4.0 — 2026-11-03
 
 - Replace product-only preference with per-shot action/evidence routing.

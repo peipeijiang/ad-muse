@@ -3,7 +3,7 @@ name: ad-muse
 description: "AdMuse: produce product-faithful ecommerce videos from a product URL or image, optionally recreating supplied reference videos, through the default MiniMax H3 backend or an explicitly selected Omni Flash backend. Use one canonical product dossier, shot plan, optional storyboard/previs and model-specific final prompt, then submit, poll, download and QC each render."
 license: MIT
 metadata:
-  version: "0.4.0"
+  version: "0.4.1"
   category: creative
   summary: "AdMuse · 广告缪斯 — from product evidence and reference inspiration to locally validated MiniMax H3 or Omni Flash videos."
 ---
@@ -59,7 +59,7 @@ Rules:
 - Both backends consume the same accepted `shot_rows.json`, product brief and references, with storyboard/previs only when the route requires them. Only the final prompt, reference selection and API envelope are backend-specific.
 - Store exactly one backend-specific prompt as `model_prompt.md`; do not write a second H3/Omni prompt for the same variant.
 
-For `omni-flash`, read [model-backends.md](references/model-backends.md) and use this skill’s request adapter; do not call the legacy prompt-rebuilding submission flow. Select the fewest references that carry the required evidence (commonly one verified product image): at most seven for `omni_flash-10s`, at most three for `omni-flash`, in this order when each is needed: chronological storyboard, verified product identity/source image, then an operation or spatial reference. Some channels accept fewer images than the model limit (some only one); an over-limit task can fail with an automatic refund, after which reduce the plan with a recorded reason and retry. The provider allows zero images for `omni_flash-10s`, but AdMuse requires at least one verified product/identity reference; that is product policy, not an API limit. Omit a reference that is not needed or fails QC; never silently slice a reviewed set. Record selected roles, hashes and reasons in `reference_plan.json`.
+For `omni-flash`, read [model-backends.md](references/model-backends.md) and use this skill’s request adapter; do not call the legacy prompt-rebuilding submission flow. Select complementary product appearance, detail and usage-context references plus any required planning boards, removing only redundancy: at most seven for `omni_flash-10s`, at most three for `omni-flash`, in this order when each is needed: chronological storyboard, complementary verified product identity/source images (including usage context), then spatial previs. Some channels accept fewer images than the model limit (some only one); an over-limit task can fail with an automatic refund, after which reduce the plan with a recorded reason and retry. The provider allows zero images for `omni_flash-10s`, but AdMuse requires at least one verified product/identity reference; that is product policy, not an API limit. Omit a reference that is not needed or fails QC; never silently slice a reviewed set. Record selected roles, hashes and reasons in `reference_plan.json`.
 
 ## Reference-video mode
 
@@ -121,25 +121,24 @@ Let `N` be the number of reference videos and `M` the requested output count. Al
 
 Each variant stores `reference_id`, `repeat_index`, `source_analysis_hash` and `product_variant_id`. Repeated outputs reuse the same reference blueprint unless the user explicitly asks for a creative variation; they may change the product, market, speaker, language or approved offer while retaining the source's chosen structure and pacing.
 
-## Risk-based model reference routing (v2)
+## Evidence-based reference routing
 
-Read [reference-routing.md](references/reference-routing.md) before choosing references for EVERY variant, including runs without source videos. Apply the universal identity, interaction, state/time, space and evidence-coverage dimensions in the guide. Route from the actual shot actions and evidence coverage, not the product category, image count, budget preference or a batch-wide “simple” label. Verified original images remain the identity authority; they do not automatically establish hand anatomy, wearing fit or contact choreography. Generated identity images alone do not solve those gaps either.
+Read [reference-routing.md](references/reference-routing.md) for every variant, including runs without reference videos. Select a complementary PRODUCT REFERENCE SET, not automatically one hero image. Review available same-SKU views for silhouette, front/back/side, relevant details, proportions and actual use in context. Prefer multiple useful images when they fill different gaps; one sufficient image is allowed, but must be justified. Do not maximize image count, mix variants or add redundant/contradictory views.
 
-Create `reference_plan.json` with `routing_version: 2`, current shot/prompt hashes, per-shot risk assessments, required reference purposes, selected images and explicit coverage. First determine evidence required to preserve the action, then minimize redundant references within the backend limit. Missing risk information blocks request preparation rather than defaulting to product-only.
+There are three artifact families: product references (including identity sheets when needed and product-in-use photos), chronological storyboard, and spatial white-model previs. Usage photos belong to the product reference set; do not create a separate operation-image stage or route. Source product photos remain the identity authority; generated identity references must pass source comparison.
 
-| Mode | Minimum evidence | Eligibility |
+| Mode | References | Choose when |
 |---|---|---|
-| `product_images_only` | Verified identity | All shots are demonstrably low-risk; no wearing/body fit, critical finger contact, grip changes, occlusion or other triggers below; a static product or simple stable hold can qualify with evidence |
-| `identity_plus_product` | Verified source plus reviewed identity sheet | Low interaction risk, but identity/multiple sides require an identity sheet; does not replace action evidence |
-| `operation_plus_product` | Verified identity plus reviewed operation/fit keyframe(s) | Actor/object or object/object interaction, body fit, material/mechanism state change, interface action or prior interaction failure; existing references qualify only if they actually show the required state/action |
-| `storyboard_plus_product` | Verified identity plus storyboard; operation refs when triggered | Meaningful multi-shot continuity, reveal/proof sequence or hand-state changes across cuts |
-| `full_spatial_reference` | Verified identity plus storyboard and spatial previs; operation refs when triggered | Installation, transfer, multiple actors interacting, major occlusion, directional proof, multiple locations or complex camera geometry |
+| `product_images_only` | One or more complementary product views, including applicable usage-context photos | Simple static presentation or stable use; sufficient appearance and use coverage, no unresolved action sequence or spatial complexity |
+| `identity_plus_product` | Reviewed identity sheet plus complementary source product references | Identity ambiguity needs consolidation; this stays within the product-reference family |
+| `storyboard_plus_product` | Product reference set plus black-and-white storyboard | Action stages, state changes, causal demonstration, interacting hands/objects or important continuity need explicit visual planning |
+| `full_spatial_reference` | Product reference set, storyboard and white-model previs | Occlusion, installation, transfer, interacting actors, directional effects or complex camera/spatial relationships require a spatial explanation |
 
-Modes are not substitutes for coverage: a spatial board with tiny hands does not fulfill a close-up operation requirement. Preserve the current storyboard Hook and actual product facts. Generate and inspect storyboard first when needed; use it and verified product images for dependent operation frames and previs. Select references by purpose, not origin: a faithful source usage photo may suffice; otherwise prepare and QC an operation frame. Do not fabricate attachment methods or unseen controls to fill an evidence gap.
+Plan from current identity, interaction, state/time, spatial and evidence needs. Do not assume product category, setting, market or fixed creative Hook. Several independent static views or unrelated locations do not alone mandate white-model previs. Stable use can remain product-only when verified usage photos cover fit/contact. Sequence and contact actions are planned in the storyboard; spatial relationships in previs. Generate and inspect storyboard before using it and product references for previs.
 
-Use `scripts/validate_reference_plan.py <variant_dir>` before every submission, including custom submission scripts. `prepare_request.py` invokes the same gate automatically. Old plans need explicit reassessment; never silently grandfather or overwrite historical submissions. This checks declared risks, coverage and hashes, not image anatomy or correctness of the assessor's judgment.
+Record current shot/prompt hashes, per-shot risks, product-reference coverage review, image purposes and visual QC in `reference_plan.json`. Run `scripts/validate_reference_plan.py <variant_dir>` before submission, including custom submitters; `prepare_request.py` calls it automatically. The validator checks declared evidence and hashes, not image anatomy or truth of the assessor's judgment.
 
-If required references exceed the model limit, simplify the shot plan with preserved intent or split into authorized clips, then replan. Do not drop a required operation reference to fit the limit. User-directed reference restrictions remain binding: explain the uncovered action and adapt it within scope; do not claim a disallowed reference was supplied.
+If required evidence exceeds backend limits, remove redundant product views first, preserve identity plus necessary planning evidence, or replan authorized clips. Do not silently drop required coverage. Missing source detail remains unknown: retrieve better product references or revise the action; do not invent unseen mechanisms. User-specified reference restrictions remain binding and require an explicit adapted plan.
 
 ## Boundary of `product-ugc-pipeline`
 
