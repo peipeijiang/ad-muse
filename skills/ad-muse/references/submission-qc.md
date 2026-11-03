@@ -4,7 +4,7 @@
 
 - The product intake gate is passed and its hashes are current.
 - Run `validate_reference_plan.py` on the current variant even for custom submission paths. Verify per-shot risk declarations against both shot rows and final prompt; product-only is not the default.
-- Inspect required operation references for hand ownership, plausible digits, contact, fit and scale; a white-model map does not substitute for a legible hand close-up.
+- Inspect the complementary product reference set for appearance, views/details and applicable usage context. Check hand/object actions in the storyboard and spatial contact in previs when required.
 - `shot_rows.json` and any required storyboard/previs agree; omitted planning images have `not_required` decisions.
 - `model_prompt.md` is the current prompt for this variant and satisfies the selected backend's prompt and duration contract.
 - Every reference image has one role, a local path or verified URL, and a recorded hash.
@@ -37,4 +37,4 @@ Check with `ffprobe` or an equivalent media inspector:
 
 Sample frames and, where speech matters, sample audio/transcription. Record evidence for product identity, action causality, physical orientation, lighting direction, language, continuity and unsupported claims. Use `pass`, `fail`, `needs_review` or `error`; never convert missing evidence into a pass.
 
-For hand/body interaction, inspect contiguous frames at contact, occlusion, release and cut boundaries. Record extra/fused digits, duplicated hands, ownership switches and impossible fit as failures with timestamps. On correction, reroute affected shots with `prior_anatomy_failure` and reviewed operation evidence; negative text alone is insufficient.
+For hand/body interaction, inspect contiguous frames at contact, occlusion, release and cut boundaries. Record extra/fused digits, duplicated hands, ownership switches and impossible fit as failures with timestamps. On correction, reroute affected shots with `prior_anatomy_failure`, review product usage references and correct storyboard/previs; negative text alone is insufficient.
