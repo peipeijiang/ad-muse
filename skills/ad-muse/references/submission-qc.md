@@ -14,6 +14,8 @@
 - The exact prompt hash and reference hashes are written before POST.
 - The task is not already submitted under the same prompt/reference hash.
 
+For a v3 image or video attempt, use the existing submission record to save the exact authorized request fingerprint, destination, and attempt state before create. Claim the attempt once before sending. For video, `prepare_request.py` supplies `request_sha256` over the payload and ordered local reference provenance. The actual submitter checks authorization, verified URL content where applicable, and whether that variant and generation stage already has an unresolved create. A missing task ID after an ambiguous create requires reconciliation, even if the prompt changed. A known task ID is used for status checks and downloads. Request preparation itself is offline.
+
 ## After POST
 
 Record the returned task ID immediately. For Omni, poll `GET https://api.lk888.ai/v1/media/status?task_id={task_id}` every 3–5 seconds. Check `is_final === true` first, then `state` (`pending`, `running`, `success`, `failed`); never branch on the Chinese display fields `status`/`status_group`. Treat a non-final task as active; never POST again just to check progress. Record the final `cost`, `refunded` state and output URL from the final response. A `failed` Omni task is refunded automatically; if the failure is a channel reference cap, reduce the reference plan with a recorded reason before any retry, never by silent slicing.

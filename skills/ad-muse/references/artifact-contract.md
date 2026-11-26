@@ -14,8 +14,9 @@ The run has one owner and one canonical file for each kind of decision.
 | `product_brief.json` | `product-ugc-pipeline` | Verified product facts, mechanics and unknowns | shot planning, prompts, QC |
 | `product_reference_set/` | `product-ugc-pipeline` | Canonical identity images plus hashes and roles | storyboard, selected backend, QC |
 | `shot_rows.json` | `commerce-production-workflow` populated by `commerce-shot-grammar` | One timeline, blocking, camera and product state plan | storyboard, previs, prompt draft |
-| `storyboard.png` | `commerce-production-workflow` | Chronological visual plan | spatial previs, prompt draft, selected backend references, QC |
-| `previs.png` | `commerce-production-workflow` | Spatial/action geometry plan | prompt draft, QC |
+| `storyboard_prompt.md` | `commerce-production-workflow` | One optional whole-sheet image prompt based on action draft and shot rows | image generation |
+| `storyboard.png` | `commerce-production-workflow` | Chronological visual plan | spatial previs, final prompt, selected backend references, QC |
+| `previs.png` | `commerce-production-workflow` | Spatial/action geometry plan | final prompt, QC |
 | `action_prompt_draft.md` | `writing-video-prompts` | Model-neutral motion, physics and sound draft | selected backend adapter |
 | `model_prompt.md` | selected backend adapter (`minimax-h3-creative-director` for H3 or this skill’s Omni formatter) | The one final prompt/envelope for the selected backend, with source structure and replacement ledger | submission |
 | `submission_manifest.json` | `ad-muse` | Paid task, cost, result, download and QC state | delivery and recovery |
@@ -34,8 +35,8 @@ The run has one owner and one canonical file for each kind of decision.
 intake_pending
 → intake_passed
 → shot_plan_passed
-→ required_reference_qc_passed
 → action_draft_passed
+→ required_reference_qc_passed
 → model_prompt_passed
 → ready_to_submit
 → submitted
@@ -45,7 +46,7 @@ intake_pending
 → creative_qc_passed | needs_review | failed
 ```
 
-If an upstream artifact changes, invalidate its downstream artifacts by revision/hash. Do not silently reuse a stale storyboard, prompt or submission manifest.
+Reopen only the checks whose inputs changed. A wording-only final prompt edit refreshes its request fingerprint and leaves unaffected board approvals current. Do not silently reuse a stale storyboard, prompt or submission manifest.
 
 Identity images, storyboard and previs are conditional. When omitted by the reference plan, record `not_required` and the reason, without creating placeholder artifacts. Only required images participate in the reference QC gate. Existing `h3_prompt.md` files from older runs may remain canonical through an explicit manifest path; never create a duplicate merely to rename them.
 

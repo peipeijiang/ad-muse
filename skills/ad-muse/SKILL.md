@@ -29,10 +29,11 @@ Read the linked skill before executing its stage:
 | Stage | Skill | Sole responsibility | Canonical output |
 |---|---|---|---|
 | Product intake | `product-ugc-pipeline` | Extract the complete source offer, analyze all product assets, build product facts, and create the canonical product reference set | `product_manifest.json`, `image_analysis.json`, `product_brief.json`, `product_reference_set/` |
-| Reference-video intake | `hypit` plus local ASR | Download each supplied reference, read its complete audiovisual structure, extract timed speech, and write a clone blueprint | `reference_videos/<reference-id>/`, `reference_analysis.json`, `reference_transcript.json` |
+| Reference-video intake | `hypit` plus local ASR when speech fidelity matters | Analyze the source cuts and audiovisual structure; transcribe locally only when the remake needs source speech | `reference_videos/<reference-id>/reference_analysis.json`, optional `transcript.json` |
 | Production order | `commerce-production-workflow` | Enforce the order, approval gates, artifact provenance, and cross-artifact QC | `pipeline_manifest.json`, stage status and gate decisions |
-| Shot planning | `commerce-shot-grammar` | Fill the shot rows with axis, blocking, camera, contact, state and movement decisions | `shot_rows.json` plus the storyboard and previs paths recorded in the manifest |
+| Shot planning | `commerce-shot-grammar` | Fill the shot rows with axis, blocking, camera, contact, state and movement decisions | `shot_rows.json` |
 | Action prompt | `writing-video-prompts` | Turn the accepted shot rows into one model-neutral action/physics draft per clip | `action_prompt_draft.md` |
+| Planning images | `commerce-production-workflow` | Write the whole-sheet storyboard prompt, direct generation, and review the board and any required spatial previs | `storyboard_prompt.md`, `storyboard.png`, optional `previs.png` (only when routed) |
 | Model formatting | `minimax-h3-creative-director` for H3, this skill’s Omni formatter for Omni Flash | Convert the accepted plan into exactly one backend-specific final prompt and reference list | `model_prompt.md` |
 | Paid execution | this skill | Submit one request at a time, poll the same task, download the result and update the manifest | `submission_manifest.json`, `downloads/*.mp4` |
 | QC | this skill with `ffmpeg`, `ffprobe`, sampled frames and local Whisper when speech matters | Verify technical validity, product identity, causal action, language and continuity | `qc/technical.json`, `qc/creative.json` |
@@ -79,7 +80,9 @@ For a supplied local file, preserve it under the same directory and record the o
 
 Use `hypit media frames`, `tile` or `tiles` around candidate boundaries and at the opening, product reveal, proof and closing. Mechanical boundaries are candidates, not editorial truth: confirm each cut from the frames and the whole video. Preserve source timecodes.
 
-### Local ASR is part of the reference read
+### Local ASR when source speech matters
+
+Run local ASR when source dialogue or speech timing matters. Keep silent remakes and visual-only adaptations on cut and frame evidence.
 
 Use the user's **already installed** OpenAI Whisper runtime and cached weights. Do not install WhisperKit, MLX, WhisperX, faster-whisper or download new weights unless separately requested. Default to `large-v3-turbo`; choose `small` or `base` only when the user prioritizes speed over accuracy. Model availability means an existing file with the official SHA-256, not merely an installed CLI or a filename.
 
@@ -91,7 +94,7 @@ A local transcript is speech evidence, not ground truth or a sound-effect classi
 
 ### Required per-reference clone blueprint
 
-Write one `reference_analysis.json` and a human-readable `reference_analysis.md` per reference. Each shot record must include:
+Write one `reference_analysis.json` per source, shared across variants. Summarize it for the user when useful. Each shot record must include:
 
 ```text
 shot_id, start_sec, end_sec, duration_sec,
@@ -166,10 +169,10 @@ run/
 ├── reference_videos/                 # one downloaded source folder per reference
 │   └── reference-01/
 │       ├── source.mp4
-│       ├── transcript.json
+│       ├── transcript.json           # only when source speech fidelity matters
 │       ├── boundaries.json
 │       ├── frames/
-│       └── reference_analysis.md
+│       └── reference_analysis.json
 ├── product_manifest.json
 ├── image_analysis.json
 ├── product_brief.json
@@ -182,9 +185,10 @@ run/
 │       ├── brief.json
 │       ├── reference_plan.json
 │       ├── shot_rows.json
+│       ├── action_prompt_draft.md
+│       ├── storyboard_prompt.md     # only on the storyboard route
 │       ├── storyboard.png           # optional, route-dependent
 │       ├── previs.png               # optional, route-dependent
-│       ├── action_prompt_draft.md
 │       ├── model_prompt.md
 │       ├── submission.json
 │       ├── downloads/
@@ -204,7 +208,7 @@ For MiniMax H3 online generation, keep the effective duration between 4 and 15 s
 
 ### 2. Run reference-video intake when present
 
-If the brief includes reference links or files, complete the reference-video branch above before writing the product creative plan. If there are no references, record `reference_mode: none` and continue.
+If the brief includes reference links or files, complete the reference-video branch above before writing the product creative plan. If there are no references, continue with `reference_video: false` and `speech_fidelity: false` in the v3 plan. The image-reference mode is derived independently.
 
 ### 3. Run product intake
 
@@ -225,21 +229,19 @@ Use `commerce-production-workflow` as the outer production order and `commerce-s
 - one `shot_rows.json` with contiguous timings that sum to the target duration;
 - one chronological color storyboard when the reference plan or user requires it, derived from the shared shot rows and verified product references;
 - one grayscale spatial/white-model previs when the reference plan or user requires it, generated after inspecting the storyboard and using that storyboard, the same rows and product references;
-- one cross-artifact QC result.
+- a brief cross-artifact verdict when planning images are in use.
 
-Create the reference plan before generating extra images, and refine it after QC without duplicating it. Omitted identity/storyboard/previs outputs are recorded as `not_required` with a reason; they need no placeholder file and are not failed gates. This orchestrator’s optional-artifact contract takes precedence over mandatory image-generation steps in the component skills. The shot rows are the source of truth for any generated planning images. `commerce-shot-grammar` supplies axis, blocking, camera, contact and state decisions, and it must not create an independent competing shot table. `writing-video-prompts` first writes one non-submittable `action_prompt_draft.md`. `commerce-production-workflow` then writes one `storyboard_prompt.md` using the draft, rows, verified product references and any Hypit evidence. The storyboard is a color, natural-phone-camera, borderless planning sheet with six meaningful cells by default for vertical work, two columns by three rows preferred, three columns by two rows when needed, and three by three only for necessary readable evidence. Store planned and observed cell mappings outside the image. For routes requiring spatial previs, include the accepted storyboard as its upstream planning input. Generate and inspect the storyboard first, then generate the previs from it plus the shared rows and verified product references. The previs explains space, contact and cameras; the storyboard establishes chronological visual beats. Follow the component workflow’s layout guide: dominant grayscale spatial map, product/legend sidebar and compact camera cards, with targeted framing previews only when useful. Preserve the current storyboard’s Hook and locations without imposing any campaign-specific opening, environment or action. Read dimensions and scale cues from the current product dossier. Record conceptual visual QC, measured geometry checks and user acceptance separately; an image with arrows does not prove real dimensions or lens geometry.
+For new variants, create one v3 `reference_plan.json` and run `scripts/validate_reference_plan.py <variant-dir> --plan-only` before creating planning images. Use the returned tier, reference mode and evidence coverage to schedule only the required work. A remake raises review depth and adds source-cut mapping; add local ASR where source speech matters. Neither requires a storyboard or previs by itself. Confirm applicable H3 multishot timing against the shared rows before paid board work. Reuse matching evidence and keep one concise reason per affected shot or variant. See [reference routing](references/reference-routing.md) for the fields and version compatibility.
 
 For each beat, record: start/end time, shot size, camera position and movement, product orientation, hand ownership and contact point, product state before/after, environment anchors, lighting direction, proof purpose, and spoken line. A product action must show a causal chain such as `hand contacts button → button is pressed → the light emits from its lamp face → the illuminated area lies in front of the lamp axis`.
 
-Run the cross-artifact gate before writing a prompt. Product identity, hand, scene, lighting direction, axis, camera side, state transition, ratio and action order must agree. If they do not, revise the dependent artifact from the accepted one; never reconcile a mismatch by inventing a third state.
+### 5. Write the action draft and prepare required images
 
-### 5. Draft actions and physical constraints
-
-Use `writing-video-prompts` on the accepted shot rows and the actual storyboard/previs observations. Treat this as an action and physics draft, not the final backend schema. It must contain one primary moving action per beat, a visible start/process/result, physically possible contact and camera motion, exact beat timings, sound events and compact failure constraints.
+Use `writing-video-prompts` on the accepted shot rows before creating the storyboard or previs. Treat this as an action and physics draft, not the final backend schema. It must contain one primary moving action per beat, a visible start/process/result, physically possible contact and camera motion, exact beat timings, sound events and compact failure constraints.
 
 For products with directional output, state the source and receiving geometry explicitly. For a lamp: the lamp face is the only emission point; the beam axis follows the lamp face; the illuminated patch is on a surface in front of that axis; pressing the control precedes illumination; no independent glow appears behind or beside the lamp. Generalize the same rule to fans, sprays, screens, magnets and other directional mechanisms.
 
-Store only one `action_prompt_draft.md`. Do not submit it directly to either backend.
+Store one `action_prompt_draft.md` for internal use. When the route calls for a board, `commerce-production-workflow` writes `storyboard_prompt.md` using that draft, the same rows and the verified product references. Use the [color storyboard workflow](../commerce-production-workflow/SKILL.md). Preserve Hypit observations that support selected beats where applicable. Choose six cells first for vertical boards (2×3 preferred; 3×2 when needed, 3×3 only to fit additional readable evidence). Keep the cell mapping outside the image. Default to `tt-image-2.6` with no automatic fallback. Verify the board before adding risk-triggered spatial previs. Stop on a failed required board; only a previously valid no-board route can proceed after an optional preview fails. Before final video authoring, reconcile accepted images once against the draft and rows: check the applicable SKU, contact, state, staging and camera constraints. Revise only affected inputs when they disagree.
 
 ### 6. Produce the backend-specific final prompt
 
@@ -247,7 +249,7 @@ For `minimax-h3`, use `minimax-h3-creative-director` as the mandatory H3 entrypo
 
 - the settled shot plan;
 - the action/physics draft;
-- the product reference set with an explicit role for every image;
+- the approved, selected references (including the storyboard and previs only when routed), with an explicit role for each;
 - the exact spoken script and locale;
 - the target duration, ratio and resolution;
 - the preservation and failure constraints.
@@ -279,19 +281,13 @@ Poll the exact task ID until it is final. For Omni, call `GET https://api.lk888.
 
 ### 9. Run two QC passes
 
-Technical QC checks a real playable MP4, codec, duration, dimensions, frame rate, audio presence and file hash. Creative QC samples the opening, action, proof and closing frames and checks:
-
-- the exact SKU, silhouette, material, controls and orientation;
-- the product/hand/scene continuity and causal action order;
-- the correct origin, direction and receiving surface of light or other directional effects;
-- no duplicate product, impossible attachment, teleport, extra hand/finger, fused digits, changing hand ownership, unsupported feature, invented label or wrong locale;
-- spoken language, timing, intelligibility and whether the product is actually shown doing the claimed action.
+Technical QC checks a playable MP4, codec, duration, dimensions, frame rate, audio presence and delivered file hash. For creative QC, sample the opening, product proof and close for SKU, intended action and locale. For a standard variant, add checks for its triggered evidence, such as the contact and state changes shown in an accepted storyboard. For high-depth review, inspect the shots that caused the escalation: use adjacent frames for contact/occlusion and physical continuity, compare target cuts with source evidence for a remake, and check speech timing when speech fidelity applies. A user-requested higher review tier deepens scrutiny of relevant shots without adding planning images.
 
 Use `pass`, `fail`, `needs_review` or `error` with evidence. Technical success never implies creative acceptance. If a clip fails, preserve it and report the failed check; rerender only with explicit authorization or when the user already authorized a correction batch.
 
 ## Handoff contract
 
-At every handoff, state the canonical artifact path, revision/hash, status and next stage. A stage is complete only when its artifact exists and its gate is recorded. The final response must separate:
+Update existing records at decision and submission boundaries. Use script-generated hashes in provenance and reuse the same input bytes within request preparation. Keep a short verdict and the affected shot or asset when a check blocks; routine handoffs reuse the existing paths and results. A wording-only edit reopens prompt and request checks while preserving unaffected image reviews. The final response must separate:
 
 - submitted count;
 - remote-final count;

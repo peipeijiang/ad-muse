@@ -4,7 +4,11 @@ This branch turns a supplied video into an evidence-bounded creative blueprint f
 
 ## Source evidence
 
-Keep the original URL or local path, the downloaded source, `ffprobe`/Hypit metadata, candidate cut boundaries, extracted frames or grids, and the transcript. Every observation in the analysis should point to a source time and, where useful, an evidence file.
+Keep the original URL or local path, the downloaded source, `ffprobe`/Hypit metadata, candidate cut boundaries, extracted frames or grids used as evidence, and the transcript when speech fidelity applies. Reuse the source analysis across variants. Record the adaptation in the existing shot rows and reference plan. Preserve target-model timing and record the reason for each changed, merged, or omitted source cut. Temporary contact sheets need no individual registration. Every observation in the analysis should point to a source time and, where useful, an evidence file.
+
+## Fit the target duration before drawing
+
+Keep the confirmed source cut order and as many meaningful cut points as the target allows. If the source exceeds the selected duration, retime the cut map before writing the action draft or drawing the board: H3 supports 4–15 seconds; Omni Flash supports a fixed 10 seconds or the selected 4/6/8/10-second profile. Shorten holds and redundant bridges first. Preserve the hook, readable action and its visible proof, intelligible required speech, and the closing beat. Merge or drop lower-priority cuts only when needed; record the source shot/time → target shot/time mapping and the reason in the existing shot rows or reference plan. Do not silently truncate the request or compress all shots uniformly. Use the resulting target beats to pick six versus nine readable storyboard cells only if the image route needs a board; a source cut does not require its own cell. Keep timestamps in the mapping, not on the board.
 
 ## Shot record
 
@@ -60,4 +64,4 @@ The transcript should preserve segments and words with source timestamps, detect
 }
 ```
 
-The example above shows the base fields only; new submissions must also include the v2 assessments, hashes, purposes and coverage required by [reference-routing.md](reference-routing.md). Apply that router even without source videos. If the provider rejects a required role or exceeds a limit, revise the shot/reference plan and revalidate; never silently remove required evidence.
+The example above shows the base fields only; new submissions must also include the current versioned assessments, hashes, purposes and coverage required by [reference-routing.md](reference-routing.md). Apply that router even without source videos. If the provider rejects a required role or exceeds a limit, revise the shot/reference plan and revalidate; never silently remove required evidence.

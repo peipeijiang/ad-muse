@@ -8,7 +8,8 @@ import math
 import mimetypes
 from pathlib import Path
 from urllib.parse import urlparse
-from validate_reference_plan import validate as validate_routing
+from validate_reference_plan import routing_version, validate_inputs
+from validate_storyboard_contract import ratio
 
 # Exact LK888 Omni profiles. The provider also accepts zero images
 # (text-to-video); AdMuse requires at least one verified product reference.
@@ -33,8 +34,9 @@ def build_request(variant_dir):
     root = Path(variant_dir).resolve()
     brief = json.loads((root / 'brief.json').read_text())
     plan = json.loads((root / 'reference_plan.json').read_text())
-    shots = json.loads((root / 'shot_rows.json').read_text())
-    routing = validate_routing(root)
+    routing_version(plan)
+    shot_bytes = (root / 'shot_rows.json').read_bytes()
+    shots = json.loads(shot_bytes)
     model = brief.get('model', 'minimax-h3')
     if model != 'minimax-h3' and model not in OMNI_PROFILES:
         raise ValueError('Unsupported model; use minimax-h3, omni-flash or omni_flash-10s')
@@ -75,14 +77,16 @@ def build_request(variant_dir):
     if not isinstance(images, list) or not 1 <= len(images) <= (9 if h3 else profile['max_images']):
         raise ValueError('Reference count outside the selected profile (AdMuse requires 1 to '
                          + str(9 if h3 else profile['max_images']) + ' for ' + model + ')')
-    encoded, provenance = [], []
+    encoded, provenance, reference_bytes = [], [], {}
     for index, ref in enumerate(images):
         if not isinstance(ref, dict):
             raise ValueError('selected_images[' + str(index) + '] must be an object')
         path = Path(ref['path'])
         if not path.is_absolute():
             raise ValueError('Selected reference paths must be absolute')
-        data = path.read_bytes()
+        if path not in reference_bytes:
+            reference_bytes[path] = path.read_bytes()
+        data = reference_bytes[path]
         sha = digest(data)
         if sha != ref.get('sha256') or ref.get('qc') != 'pass' or not ref.get('role'):
             raise ValueError('Reference needs matching hash, role and passed visual QC')
@@ -105,6 +109,11 @@ def build_request(variant_dir):
             transport, url_host, url_sha = ('data_url' if h3 else 'data_url_compat'), None, None
         provenance.append({'path': str(path), 'sha256': sha, 'role': ref['role'],
                            'transport': transport, 'url_host': url_host, 'url_sha256': url_sha})
+    routing = validate_inputs(plan, shot_bytes, prompt_bytes, reference_bytes=reference_bytes)
+    if routing['routing_version'] == 3 and 'storyboard' in routing['required_coverage']:
+        cell_aspect = plan['storyboard']['grid']['cell_aspect_ratio']
+        if ratio(cell_aspect) != ratio(brief['aspect_ratio']):
+            raise ValueError('Storyboard cell ratio differs from the target video aspect ratio')
     params = {'aspect_ratio': brief['aspect_ratio']}
     params['image_url' if h3 else 'images'] = encoded
     if h3:
@@ -131,6 +140,11 @@ def build_request(variant_dir):
                 'param_keys': sorted(params), 'notify_url_registered': notify_url is not None,
                 'data_url_smoke_test_required': 'data_url_compat' in transports,
                 'routing': routing, 'validation': 'structural_only', 'submitted': False}
+    if routing['routing_version'] == 3:
+        # Hash the request envelope and ordered reference bytes, including URL-backed images.
+        snapshot = {'payload': payload, 'references': provenance}
+        evidence['request_sha256'] = digest(json.dumps(snapshot, sort_keys=True, separators=(',', ':'),
+                                                       ensure_ascii=False).encode('utf-8'))
     return payload, evidence
 
 
