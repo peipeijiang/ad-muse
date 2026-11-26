@@ -7,6 +7,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 from validate_reference_plan import RISKS, validate
 from prepare_request import build_request
+from validate_storyboard_contract import validate as validate_storyboard
 
 class RoutingTests(unittest.TestCase):
     def setUp(self):
@@ -86,5 +87,58 @@ class RoutingTests(unittest.TestCase):
     def test_wrong_shot_coverage(self):
         self.write(count=2);self.plan['selected_images'][0]['covers_shots']=['s0'];self.save()
         with self.assertRaisesRegex(ValueError,'s1'):validate(self.root)
+
+    def write_storyboard_v3(self, columns=2, rows=3):
+        self.write(count=2)
+        board_path = self.root / 'ref.png'
+        board_sha = hashlib.sha256(board_path.read_bytes()).hexdigest()
+        cell_count = columns * rows
+        cells = []
+        observed = []
+        for row in range(1, rows + 1):
+            for column in range(1, columns + 1):
+                cell_id = f'r{row}c{column}'
+                cells.append({'cell_id': cell_id, 'shot_ids': ['s0'], 'proof_id': f'proof-{cell_id}'})
+                observed.append({'cell_id': cell_id, 'status': 'pass', 'bounds': [0, 0, 1, 1],
+                                 'visible_proof': f'proof visible in {cell_id}', 'shot_ids_observed': 's0'})
+        self.plan.update({
+            'routing_version': 3,
+            'storyboard': {
+                'status': 'required',
+                'path': str(board_path),
+                'sha256': board_sha,
+                'width': 1,
+                'height': 1,
+                'image_provider': 'tt-image-2.6',
+                'image_fallback': 'none',
+                'grid': {'columns': columns, 'rows': rows, 'reading_order': 'row-major',
+                         'cell_aspect_ratio': '1:1', 'board_layout_ratio': f'{columns}:{rows}',
+                         'provider_transport_ratio': '9:21'},
+                'planned_cells': cells,
+                'observed_cells': observed,
+                'required_coverage': {'proof': [f'proof-r{row}c{column}' for row in range(1, rows + 1) for column in range(1, columns + 1)]},
+            },
+        })
+        self.save()
+
+    def test_color_storyboard_v3_contract(self):
+        self.write_storyboard_v3()
+        result = validate_storyboard(self.root)
+        self.assertEqual(result['grid'], {'columns': 2, 'rows': 3})
+        self.assertEqual(validate(self.root)['routing_version'], 3)
+
+    def test_storyboard_contract_rejects_wrong_board_ratio(self):
+        self.write_storyboard_v3()
+        self.plan['storyboard']['grid']['board_layout_ratio'] = '9:16'
+        self.save()
+        with self.assertRaisesRegex(ValueError, 'board_layout_ratio'):
+            validate_storyboard(self.root)
+
+    def test_storyboard_contract_rejects_unobserved_cell(self):
+        self.write_storyboard_v3()
+        self.plan['storyboard']['observed_cells'][0]['status'] = 'pending'
+        self.save()
+        with self.assertRaisesRegex(ValueError, 'observed cell'):
+            validate_storyboard(self.root)
 
 if __name__=='__main__':unittest.main()

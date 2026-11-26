@@ -2,17 +2,17 @@
 
 ## Visual direction
 
-Use a black-and-white storyboard and a grayscale white/clay-model spatial map. Favor readable volumes, sparse contours and restrained shading. Do not substitute colored beauty renders, polished advertising images or a dense decorative wireframe for planning artifacts.
+Use a color storyboard with natural phone-camera exposure, white balance, material texture and source-faithful product markings. Use a grayscale white/clay-model spatial map only when spatial risk requires it. The storyboard is a planning sheet rather than a polished beauty render or video canvas.
 
 Combine a dominant scene map, a product/legend sidebar and short camera-side explanations. These are adaptable layout roles, not a required number of scenes or shots. Fit the sheet to the current story: a single tabletop demonstration needs no second location; multi-location stories may need separated maps or multiple sheets. Never inherit camera IDs, actor positions or product dimensions from a previous campaign.
 
 ## Storyboard
 
-Default to a six-panel layout: three columns by two rows, ordered left to right and top to bottom. Change the panel count if explicitly requested or necessary to preserve the story’s essential beats; record the reason.
+Default to six meaningful cells for a vertical target, with two columns by three rows ordered left to right and top to bottom. Use three columns by two rows when channel geometry or readability requires it. Use three by three only when six cells cannot cover required evidence while retaining readability. Do not add filler. A cell may show a state within one shot, and one shot may map to multiple cells. Record the reason and the external cell-to-shot mapping.
 
 Show chronological composition and action with stable shot IDs. Follow the approved storyboard and creative brief for the opening Hook. Hooks may be a problem, result reveal, demonstration, dialogue, reaction, comparison, action or audio/text-led opening; no Hook type or location is mandatory. Preserve its actual composition and timing. The spatial map inherits only the environments, actors, props and actions that appear in that storyboard, without introducing a pickup, rush, crowd or product close-up by default. If the Hook exists only in speech/text, retain that information in the shot rows rather than inventing spatial action. Preserve grip, product face, state and transition. Lay out real target-ratio panels; a square panel marked “9:16” fails. Keep readable captions outside the image areas.
 
-Generate this board through the LK888/upDrama media task with `tt-image-2.5`; record the model, task ID, params, prompt hash and output hash.
+Generate this board through the configured image router with explicit `tt-image-2.6` and no fallback. Record model, task ID, params, prompt hash and input/output hashes. Inspect the exact delivered bytes used downstream.
 
 ## White-model board
 
@@ -34,8 +34,8 @@ For handheld products, compare product and hand on the same depth plane and avoi
 
 ## Fast QC and revision
 
-1. Inspect storyboard first: Hook rendered, panel ratio, product/hand consistency, action order, and generation provenance uses `tt-image-2.5`.
-2. Inspect spatial board: dominant map, same locations, unique IDs, readable target directions, actor stages, product scale cue and contact/release; verify generation provenance uses `tt-image-2.5`.
+1. Inspect storyboard first: Hook rendered, grid and cell ratios, product/hand consistency, action order, observed cell bounds, required proof and generation provenance uses `tt-image-2.6`.
+2. Inspect spatial board: dominant map, same locations, unique IDs, readable target directions, actor stages, product scale cue and contact/release; verify generation provenance uses `tt-image-2.6`.
 3. Check each shot across rows, storyboard, map and bottom cards. Fix text/IDs with overlays when possible; regenerate only when composition/staging needs it. Any upstream edit invalidates affected downstream QC.
 4. Record `visual_concept_check`, `measured_geometry_check` and `user_acceptance` separately as pass/fail/not_verified/pending with reasons. Schematics do not validate real lens FOV, occlusion, collisions or exact size. Framing previews must use actual target aspect ratio if claimed as frame checks.
 5. Retain prompts, task IDs, inputs, revisions and costs if available. Do not rerun paid generation solely to improve an easily editable label.

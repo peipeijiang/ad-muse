@@ -32,6 +32,12 @@ def nonempty(value):
 def validate(root):
     root = Path(root)
     plan = json.loads((root / 'reference_plan.json').read_text())
+    if plan.get('routing_version') == 3:
+        from validate_storyboard_contract import validate as validate_storyboard
+        validate_storyboard(root)
+        return {'routing_version': 3, 'minimum_mode': plan.get('mode'), 'mode': plan.get('mode'),
+                'required_coverage': plan.get('storyboard', {}).get('required_coverage', {}),
+                'validation': 'declared_risks_and_storyboard_evidence', 'anatomy_verified_by_code': False}
     shots = json.loads((root / 'shot_rows.json').read_text())
     if plan.get('routing_version') != 2:
         raise ValueError('Routing v2 assessment required; legacy product-only plans cannot be reused silently')
